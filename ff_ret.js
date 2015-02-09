@@ -87,26 +87,29 @@ var experiment = {
     // Get the current time so we can compute reaction time later.
     var startTime = (new Date()).getTime()
     
-    
-    $("img").one("click", function(){
-                 
-                // record the reaction time (current time minus start time) and which image was selected
-                var endTime = (new Date()).getTime(),
-                    data = {
-                      stimulus: $(this).attr("src"),
-                      rt: endTime - startTime
-                     };
-       
-                experiment.data.push(data);
-       
-                // Temporarily clear the display
-                $("img").attr("style", "display:none");
-                                                                   
-                // Wait 500 milliseconds before starting the next trial.
-                setTimeout(experiment.next, 500);
-                });
-  }
+    var clickHandler = function(event){
+      
+      $("img").off("click"); // Binding with 'one' is not preventing multiple click events
 
-    // Here, we actually bind the handler. We're using jQuery's <code>one()</code> function, which ensures that the handler can only run once. This is very important, because generally you only want the handler to run only once per trial. If you don't bind with <code>one()</code>, the handler might run multiple times per trial, which can be disastrous. For instance, if the user accidentally presses P twice, you'll be recording an extra copy of the data for this trial and (even worse) you will be calling <code>experiment.next</code> twice, which will cause trials to be skipped! That said, there are certainly cases where you do want to run an event handler multiple times per trial. In this case, you want to use the <code>bind()</code> and <code>unbind()</code> functions, but you have to be extra careful about properly unbinding.
-    //$(document).one("keydown", keyPressHandler);
+      // record the reaction time (current time minus start time) and which image was selected
+      var endTime = (new Date()).getTime(),
+          data = {
+            stimulus: $(this).attr("src"),
+            rt: endTime - startTime
+          };
+                   
+      experiment.data.push(data);
+                   
+      // Temporarily clear the display
+      $("img").attr("style", "display:none");
+                   
+      // Wait 500 milliseconds before starting the next trial.
+      setTimeout(experiment.next, 500);
+      
+    };
+    
+    // Bind the handler
+    $("img").one("click", clickHandler); //'one' is not working as intended
+    
+  }
 }
