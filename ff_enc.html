@@ -26,7 +26,7 @@
 		<span id="bigger-key">{{}}</span> if the item in the picture is bigger than a shoebox <b>in real life</b>.
 	</p>
 	<!-- Button to start the experiment. <code>this.blur()</code> removes the focus from the button, if the user pressed the button by using the keyboard, rather than the mouse. -->
-	<button type="button" onclick="this.blur(); experiment.next()">Start</button>
+	<button type="button" onclick="this.blur(); experiment.leadin()">Start</button>
 
 	<!-- Legal blurb that we're required to show. -->
 	<p class="block-text" id="legal">Legal information: By answering the
@@ -41,10 +41,24 @@
 		anonymity is assured; the researchers who have requested your
 		participation will not receive any personal information about you.</p>
 </div>
+
+<!-- Preloading slide. -->
+
+<div class="slide" id="preload">
+  Loading images:
+  <span id="num-loaded"></span> / <span id="num-total"></span> loaded so far
+</div>
+
+<!-- The "leadin" slide - blank screen. -->
+<div class="slide" id="leadin">
+	<img class = "centered" src="stim/aabacus/e1_s1.jpg" style="display:none">
+</div>
+
 <!-- The "stage" slide - where the bulk of the experiment will be displayed. Again, note the use of <code>{{}}</code>. -->
 <div class="slide" id="stage">
 	<img class = "centered" src="stim/aabacus/e1_s1.jpg">
 </div>
+
 <!-- The finish slide. -->
 <div class="slide" id="finished">
 	You're finished - thanks for participating! Submitting to Mechanical Turk...

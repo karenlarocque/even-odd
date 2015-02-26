@@ -30,6 +30,58 @@ function randomElement(array) {
   return array[randomInteger(array.length)];
 }
 
+// ## Preloading functions
+
+// Function called after each image is loaded
+var numLoadedImages = 0;
+function onLoadedOne() {
+  numLoadedImages++;
+  $("#num-loaded").text(numLoadedImages);
+}
+
+// Function called once all images have been successfully loaded
+function onLoadedAll() {
+  showSlide("instructions");
+}
+
+// Preload function
+
+function preload(images, onLoadedOne, onLoadedAll) {
+  
+  var remainingImages = images.slice();
+  var finished = false;
+  
+  // how long to wait in between loading images
+  var loadDelayInterval = 1500;
+  
+  
+  var worker = function() {
+    
+    if (remainingImages.length == 0) {
+      if (!finished) {
+        finished = true;
+        setTimeout(onLoadedAll, loadDelayInterval);
+      }
+    } else {
+      
+      var src = remainingImages.shift();
+      
+      var image = new Image();
+      image.onload = function() {
+        onLoadedOne();
+        setTimeout(worker, loadDelayInterval);
+      };
+      image.src = src;
+    }
+  };
+  
+  // load images 3 at a time
+  var concurrent = 3;
+  for(var i = 0; i < concurrent; i++) {
+    setTimeout(worker, 20 - i);
+  };
+}
+
 // ## Configuration settings
 
 var stimdir = "stim/";
@@ -50,19 +102,45 @@ var allKeyBindings = [
 $("#smaller-key").text(pSmaller ? "P" : "Q");
 $("#bigger-key").text(pSmaller ? "Q" : "P");
 
-// Show the instructions slide -- this is what we want subjects to see first.
-showSlide("instructions");
+
+// ## Start the experiment
+
+// Add path and exemplar information to images
+var imgs = [];
+for ( var i = 0; i < myTrialOrder.length; i++ ) {
+  imgs.push(stimdir + myTrialOrder[i] + "/e1_s1.jpg");
+}
+
+// Show preload slide and load
+showSlide("preload");
+$("#num-total").text(imgs.length);
+preload(imgs,
+        onLoadedOne,
+        onLoadedAll);
+console.log('here');
+
 
 // ## The main event
+
 // I implement the sequence as an object with properties and methods. The benefit of encapsulating everything in an object is that it's conceptually coherent (i.e. the <code>data</code> variable belongs to this particular sequence and not any other) and allows you to **compose** sequences to build more complicated experiments. For instance, if you wanted an experiment with, say, a survey, a reaction time test, and a memory test presented in a number of different orders, you could easily do so by creating three separate sequences and dynamically setting the <code>end()</code> function for each sequence so that it points to the next. **More practically, you should stick everything in an object and submit that whole object so that you don't lose data (e.g. randomization parameters, what condition the subject is in, etc). Don't worry about the fact that some of the object properties are functions -- mmturkey (the Turk submission library) will strip these out.**
 
 var experiment = {
+  
   // Parameters for this sequence.
   trials: myTrialOrder,
+  
   // Experiment-specific parameters - which keys map to smaller / bigger
   keyBindings: myKeyBindings,
+  
   // An array to store the data that we're collecting.
   data: [],
+  
+  // The function that gets called for the first trial (1500 ms padding of blank screen)
+  leadin: function() {
+    showSlide("leadin");
+    setTimeout(function(){experiment.next()}, 1500);
+  },
+  
   // The function that gets called when the sequence is finished.
   end: function() {
     // Show the finish slide.
@@ -70,7 +148,8 @@ var experiment = {
     // Wait 1.5 seconds and then submit the whole experiment object to Mechanical Turk (mmturkey filters out the functions so we know we're just submitting properties [i.e. data])
     setTimeout(function() { turk.submit(experiment) }, 1500);
   },
-  // The work horse of the sequence - what to do on every trial.
+  
+  // The work horse of the sequence - what to do on every trial
   next: function() {
     // If the number of remaining trials is 0, we're done, so call the end function.
     if (experiment.trials.length == 0) {
@@ -78,20 +157,26 @@ var experiment = {
       return;
     }
     
-    // Get the current trial - <code>shift()</code> removes the first element of the array and returns it.
+    // Get the current trial - <code>shift()</code> removes the first element of the array and returns it
     var trial_img = stimdir + experiment.trials.shift() + "/e1_s1.jpg";
     
+    // Initialize data structure for the trial
+    var trialdata = {
+      stimulus: trial_img,
+      rt: -1,
+      resp: 'noresponse'
+    };
+    
+    // Display the image stimulus
     showSlide("stage");
-    // Display the image stimulus.
     $(".centered").attr({src: trial_img,
                          style: "display:initial"});
     
-    // Get the current time so we can compute reaction time later.
+    // Get the current time so we can compute reaction time later
     var startTime = (new Date()).getTime();
     
-    // Set up a function to react to keyboard input. Functions that are used to react to user input are called *event handlers*. In addition to writing these event handlers, you have to *bind* them to particular events (i.e., tell the browser that you actually want the handler to run when the user performs an action). Note that the handler always takes an <code>event</code> argument, which is an object that provides data about the user input (e.g., where they clicked, which button they pressed).
+    // Function for keyboard input
     var keyPressHandler = function(event) {
-      // A slight disadvantage of this code is that you have to test for numeric key values; instead of writing code that expresses "*do X if 'Q' was pressed*", you have to do the more complicated "*do X if the key with code 80 was pressed*". A library like [Keymaster](http://github.com/madrobby/keymaster) lets you write simpler code like <code>key('a', function(){ alert('you pressed a!') })</code>, but I've omitted it here. Here, we get the numeric key code from the event object
       
       var keyCode = event.which;
       
@@ -101,27 +186,30 @@ var experiment = {
         
       } else {
         
-
         // If a valid key is pressed (code 80 is p, 81 is q),
-        // record the reaction time (current time minus start time), which key was pressed, and what that means (even or odd).
+        // record the reaction time (current time minus start time) and which key was pressed
         var endTime = (new Date()).getTime(),
-            key = (keyCode == 80) ? "p" : "q",
-            data = {
-              stimulus: trial_img,
-              rt: endTime - startTime,
-              resp: key
-            };
-        $(".centered").attr("style", "display:none");
-        experiment.data.push(data);
-        // Temporarily clear the image.
-        $(".centered").attr("style","display:none");
-        // Wait 500 milliseconds before starting the next trial.
-        setTimeout(experiment.next, 500);
+            key = (keyCode == 80) ? "p" : "q";
+        
+        trialdata.rt = endTime - startTime;
+        trialdata.resp = key;
+        
       }
+  
     };
     
-    // Here, we actually bind the handler. We're using jQuery's <code>one()</code> function, which ensures that the handler can only run once. This is very important, because generally you only want the handler to run only once per trial. If you don't bind with <code>one()</code>, the handler might run multiple times per trial, which can be disastrous. For instance, if the user accidentally presses P twice, you'll be recording an extra copy of the data for this trial and (even worse) you will be calling <code>experiment.next</code> twice, which will cause trials to be skipped! That said, there are certainly cases where you do want to run an event handler multiple times per trial. In this case, you want to use the <code>bind()</code> and <code>unbind()</code> functions, but you have to be extra careful about properly unbinding.
+    // Bind the key press handler
     $(document).one("keydown", keyPressHandler);
+    
+    // Show stimulus for 200 ms, then clear & impose 1800 ms ISI
+    setTimeout(function(){
+                  $(".centered").attr("style","display:none");
+               }, 200);
+    setTimeout(function(){
+                $(document).off("keydown", keyPressHandler)
+                experiment.data.push(trialdata);
+                experiment.next();
+               }, 1800);
     
   }
 }
