@@ -31,7 +31,9 @@ function randomElement(array) {
 // ## Preloading functions
 
 // Function called after each image is loaded
+
 var numLoadedImages = 0;
+
 function onLoadedOne() {
   numLoadedImages++;
   $("#num-loaded").text(numLoadedImages);
@@ -50,7 +52,7 @@ function preload(images, onLoadedOne, onLoadedAll) {
   var finished = false;
   
   // How long to wait in between loading images
-  var loadDelayInterval = 250;
+  var loadDelayInterval = 0;
   
   var worker = function() {
     
@@ -70,48 +72,67 @@ function preload(images, onLoadedOne, onLoadedAll) {
       };
       image.src = src;
     }
+    
   };
   
-  // Load images 3 at a time
-  var concurrent = 3;
+  // Load images 6 at a time
+  var concurrent = 6;
   for(var i = 0; i < concurrent; i++) {
     setTimeout(worker, 20 - i);
   };
+  
 }
 
 // ## Configuration settings
 
-var stimdir = "stim/";
-
+// Randomly select key mapping
 var allKeyBindings = [
-      {"p": "smaller", "q": "bigger"},
-      {"p": "bigger", "q": "smaller"} ],
-    allTrialOrders = [
-      ["accordion","altoid","apple","backpack"],
-      ["backpack","apple","altoid","accordion"] ],
+       {"p": "smaller", "q": "bigger"},
+       {"p": "bigger", "q": "smaller"} ],
     myKeyBindings = randomElement(allKeyBindings),
-    myTrialOrder = randomElement(allTrialOrders),
     pSmaller = (myKeyBindings["p"] == "smaller");
-    
-// Fill in the instructions template using jQuery's <code>html()</code> method. In particular,
-// let the subject know which keys correspond to even/odd. Here, I'm using the so-called **ternary operator**, which is a shorthand for <code>if (...) { ... } else { ... }</code>
 
+// Fill in the instructions template using jQuery's <code>html()</code> method. In particular,
+// let the subject know which keys correspond to bigger/smaller
 $("#smaller-key").text(pSmaller ? "P" : "Q");
 $("#bigger-key").text(pSmaller ? "Q" : "P");
 
+// Initialize stimuli parameters
+var stimdir = "stim/";
+var stim = JSON.parse(stimuli);
+var counterbalance = randomInteger(4);
+
+// Assign stimuli to conditions based on counterbalance
+var S1 = stim[(0 + counterbalance) % 4],
+    S2 = stim[(1 + counterbalance) % 4],
+    S3 = stim[(2 + counterbalance) % 4],
+    S4 = stim[(3 + counterbalance) % 4];
+
+// Construct full stimulus names
+var trialOrder = [];
+for (var i = 0; i < S1.length; i++){
+  trialOrder.push(stimdir + S1[i] + "/e1_s1.jpg");
+}
+for (var i = 0; i < S2.length; i++){
+  trialOrder.push(stimdir + S2[i] + "/e1_s2.jpg");
+}
+for (var i = 0; i < S3.length; i++){
+  trialOrder.push(stimdir + S3[i] + "/e2_s1.jpg");
+}
+for (var i = 0; i < S4.length; i++){
+  trialOrder.push(stimdir + S4[i] + "/e2_s2.jpg");
+}
+
+alert(trialOrder)
+
+// Shuffle
 
 // ## Start the experiment
 
-// Add path and exemplar information to images
-var imgs = [];
-for ( var i = 0; i < myTrialOrder.length; i++ ) {
-  imgs.push(stimdir + myTrialOrder[i] + "/e1_s1.jpg");
-}
-
 // Show preload slide and load
 showSlide("preload");
-$("#num-total").text(imgs.length);
-preload(imgs,
+$("#num-total").text(trialOrder.length);
+preload(trialOrder,
         onLoadedOne,
         onLoadedAll);
 console.log('here');
@@ -123,7 +144,7 @@ console.log('here');
 
 var allData = {
   
-  trials: myTrialOrder,
+  trials: trialOrder,
   keyBindings: myKeyBindings,
   fingerprintData: fingerprint,
   trialData: [] // populated each trial
@@ -133,7 +154,7 @@ var allData = {
 var experiment = {
   
   // Parameters for this sequence.
-  trials: myTrialOrder,
+  trials: trialOrder,
   
   // The function that gets called for the first trial (1500 ms padding of blank screen)
   leadin: function() {
@@ -164,7 +185,7 @@ var experiment = {
     }
     
     // Get the current trial - <code>shift()</code> removes the first element of the array and returns it
-    var trial_img = stimdir + experiment.trials.shift() + "/e1_s1.jpg";
+    var trial_img = experiment.trials.shift();
     
     // Initialize data structure for the trial
     var trial = {
@@ -213,6 +234,6 @@ var experiment = {
                 $(document).off("keydown", keyPressHandler)
                 allData.trialData.push(trial);
                 experiment.next();
-               }, 1800);    
+               }, 1800);
   }
 }
