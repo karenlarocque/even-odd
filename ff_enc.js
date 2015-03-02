@@ -142,6 +142,9 @@ fisherYates(trialOrder);
 
 // ## Start the experiment
 
+// Hide our filler image
+$(".centered").hide();
+
 // Show preload slide and load
 showSlide("preload");
 $("#num-total").text(trialOrder.length);
@@ -214,8 +217,8 @@ var experiment = {
     
     // Display the image stimulus
     showSlide("stage");
-    $(".centered").attr({src: trial_img,
-                         style: "display:initial"});
+    $(".centered").attr("src", trial_img);
+    $(".centered").show();
     
     // Get the current time so we can compute reaction time later
     var startTime = (new Date()).getTime();
@@ -246,12 +249,13 @@ var experiment = {
     
     // Show stimulus for 200 ms, then clear & impose 1800 ms ISI
     setTimeout(function(){
-                  $(".centered").attr("style","display:none");
+                  $(".centered").hide();
+                  setTimeout(function(){
+                          $(document).off("keydown", keyPressHandler);
+                          allData.trialData.push(trial);
+                          experiment.next();
+                          }, 1800);
                }, 200);
-    setTimeout(function(){
-                $(document).off("keydown", keyPressHandler)
-                allData.trialData.push(trial);
-                experiment.next();
-               }, 1800);
+
   }
 }
