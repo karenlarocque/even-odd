@@ -169,7 +169,7 @@ var allData = {
 var experiment = {
   
   // Trials
-  // deep copy since we are using .shift() but may want to retain this list
+  // deep copy since we are using .shift() but want to retain record of trial order
   trials: $.extend(true, [], trialOrder),
   
   // The function that gets called for the first trial (1500 ms padding)
