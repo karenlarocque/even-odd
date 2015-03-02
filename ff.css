@@ -55,7 +55,6 @@ button[disabled] {
 
 
 /* ## Experiment-specific styles */
-/* This stuff will vary by experiment. */
 
 #logo-text {
   font-weight: bold;
@@ -65,7 +64,7 @@ button[disabled] {
   text-align: center;
 }
 
-#odd-key, #even-key {
+.bigger-key, .smaller-key {
   background-color: #e3e3e3;
   padding: 2px;
   border: 1px outset #cccccc;

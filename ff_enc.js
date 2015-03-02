@@ -28,6 +28,20 @@ function randomElement(array) {
   return array[randomInteger(array.length)];
 }
 
+// Fisher Yates algorithm for random shuffling
+// source: http://sedition.com/perl/javascript-fy.html
+function fisherYates ( myArray ) {
+  var i = myArray.length;
+  if ( i == 0 ) return false;
+  while ( --i ) {
+    var j = Math.floor( Math.random() * ( i + 1 ) );
+    var tempi = myArray[i];
+    var tempj = myArray[j];
+    myArray[i] = tempj;
+    myArray[j] = tempi;
+  }
+}
+
 // ## Preloading functions
 
 // Function called after each image is loaded
@@ -94,8 +108,8 @@ var allKeyBindings = [
 
 // Fill in the instructions template using jQuery's <code>html()</code> method. In particular,
 // let the subject know which keys correspond to bigger/smaller
-$("#smaller-key").text(pSmaller ? "P" : "Q");
-$("#bigger-key").text(pSmaller ? "Q" : "P");
+$(".smaller-key").text(pSmaller ? "P" : "Q");
+$(".bigger-key").text(pSmaller ? "Q" : "P");
 
 // Initialize stimuli parameters
 var stimdir = "stim/";
@@ -123,9 +137,8 @@ for (var i = 0; i < S4.length; i++){
   trialOrder.push(stimdir + S4[i] + "/e2_s2.jpg");
 }
 
-alert(trialOrder)
-
 // Shuffle
+fisherYates(trialOrder);
 
 // ## Start the experiment
 
@@ -144,7 +157,6 @@ console.log('here');
 
 var allData = {
   
-  trials: trialOrder,
   keyBindings: myKeyBindings,
   fingerprintData: fingerprint,
   trialData: [] // populated each trial
@@ -153,13 +165,19 @@ var allData = {
 
 var experiment = {
   
-  // Parameters for this sequence.
-  trials: trialOrder,
+  // Trials
+  // deep copy since we are using .shift() but want to retain record of trial order
+  trials: $.extend(true, [], trialOrder),
   
-  // The function that gets called for the first trial (1500 ms padding of blank screen)
+  // The function that gets called for the first trial (1500 ms padding)
   leadin: function() {
     showSlide("leadin");
-    setTimeout(function(){experiment.next()}, 1500);
+    setTimeout(function(){
+               $("p").hide();
+               setTimeout(function(){
+                          experiment.next();
+                          }, 1000)
+               }, 1500);
   },
   
   // The function that gets called when the sequence is finished.
