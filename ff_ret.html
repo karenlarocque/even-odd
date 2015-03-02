@@ -11,6 +11,13 @@
 	
 	<!-- Include the cascading style sheet (CSS), which lets us separate style from content. This stylesheet is important because it defines the notion of a **slide** and also makes things look nicer, which subjects appreciate. It's worth looking at the [source code](style.html). -->
 	<link rel="stylesheet" href="ff.css" />
+  
+  <!-- Fingerprint -->
+  <script src="fingerprint.js"></script>
+  
+  <!-- Stimuli -->
+  <script src="stimuli.json"></script>
+  
 </head>
 <body>
 
@@ -41,6 +48,13 @@
 		anonymity is assured; the researchers who have requested your
 		participation will not receive any personal information about you.</p>
 </div>
+
+<!-- Preloading slide. -->
+<div class="slide" id="preload">
+  Loading images:
+  <span id="num-loaded"></span> / <span id="num-total"></span> loaded so far
+</div>
+
 <!-- The "stage" slide - where the bulk of the experiment will be displayed. Again, note the use of <code>{{}}</code>. -->
 <div class="slide" id="stage">
 	<img class = "upperleft" src="stim/aabacus/e1_s1.jpg">
