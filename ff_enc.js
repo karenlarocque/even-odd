@@ -41,6 +41,7 @@ function fisherYates ( myArray ) {
     myArray[j] = tempi;
   }
 }
+                
 
 // ## Preloading functions
 
@@ -96,6 +97,22 @@ function preload(images, onLoadedOne, onLoadedAll) {
   };
   
 }
+
+// Demographic submission
+$("form").submit( function (){
+                 var age = $("#demographics")[0].elements["age"].value;
+                 var gender = $("#demographics")[0].elements["gender"].value;
+                 
+                 if (age == "" || gender == "") {
+                    $("#validated").text("Please fill out all fields before submitting.")
+                  } else {
+                    allData.age = age;
+                    allData.gender = gender;
+                    showSlide("finished");
+                    // Wait 1.5 seconds and then submit the whole experiment object to Mechanical Turk (mmturkey filters out the functions so we know we're just submitting properties [i.e. data])
+                    setTimeout(function() { turk.submit(allData) }, 1500);
+                  }
+                  })
 
 // ## Configuration settings
 
@@ -196,11 +213,12 @@ var experiment = {
     allData.acc_smaller = correct_smaller / set_smaller.length;
     allData.acc_bigger = correct_bigger / set_bigger.length;
     
-    // Show the finish slide.
-    showSlide("finished");
+    // Update the finished slide
+    //if (allData.acc_smaller >= .8 && allData.acc_bigger >= .8){
+    //}
     
-    // Wait 1.5 seconds and then submit the whole experiment object to Mechanical Turk (mmturkey filters out the functions so we know we're just submitting properties [i.e. data])
-    setTimeout(function() { turk.submit(allData) }, 1500);
+    // Show the demographics slide.
+    showSlide("demo");
     
   },
   
