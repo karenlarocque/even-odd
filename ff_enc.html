@@ -86,34 +86,48 @@
 
 <!-- The demographics slide. -->
 <div class="slide" id="demo">
-  <p> Please enter some demographic information and then click 'submit'. </p>
+  
+  <div> Please enter some demographic information and then click 'submit'. </div>
+  
   <br><br>
   
-  <form id = "demographics" action="javascript:myFunction(){};">
-    
-    Age:
-    <br>
-    <input type = "text" name = "age">
-    <br><br>
-    Gender:
-    <br>
-    <input type = "radio" name = "gender" value = "female"> Female
-    <br>
-    <input type = "radio" name = "gender" value = "male"> Male
-    <br>
-    <input type = "radio" name = "gender" value = "noans"> Prefer not to answer
-    <br><br>
-    <input type = "submit"</a>
-    <br><br>
-    <span id="validated" style="color: red; font-weight: bold"><span>
+  <div>
+  
+    <form id = "demographics" action="javascript:myFunction(){};">
+      
+      Age:
+      <br>
+      <input type = "text" name = "age">
+      <br><br>
+      Gender:
+      <br>
+      <input type = "radio" name = "gender" value = "female"> Female
+      <br>
+      <input type = "radio" name = "gender" value = "male"> Male
+      <br>
+      <input type = "radio" name = "gender" value = "noans"> Prefer not to answer
+      <br><br>
+      <input type = "submit"</a>
+      <br><br>
+      <span id="validated" style="color: red; font-weight: bold"><span>
               
   </form>
+  </div>
   
 </div>
 
 <!-- The finish slide. -->
-<div class="slide" id="finished">
-	You're finished - thanks for participating! Submitting to Mechanical Turk...
+<div class="slide" id="finished" >
+  <div class="block-text" id="finish-noret">
+    You're finished - thanks for participating! Submitting to Mechanical Turk...
+  </div>
+  <div class="block-text" id="finish-yesret">
+    You're finished with this experiment - thanks for participating! Your data are being submitted to Mechanical Turk. <br><br>
+    <b>You now qualify for an additional experiment that tests your memory for the objects that you just saw! This new experiment will take approximately 5 minutes and pays $0.35.</b><br><br>
+    Please visit <a href="" id="retlink">this HIT</a> <span id = "timeframe">{{}}</span>(between <span id = "retstart">{{}}></span> and <span id = "retend">{{}}</span>), and enter the following code: <br>
+    <span id = "retcode" style = "color: red">{{}}</span>.
+    
+  </div>
 </div>
 
 <!-- Include the JavaScript file for the experiment. As written, that script immediately executes commands, so we include it here at the end of the HTML file to ensure that resources referenced by the script actually exist. -->

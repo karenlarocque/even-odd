@@ -28,6 +28,34 @@ function randomElement(array) {
   return array[randomInteger(array.length)];
 }
 
+// Convert a date object into a string for retrieval code
+function dateToCode( theDate ) {
+  
+  var year = theDate.getFullYear();
+  var month = String('00' + theDate.getMonth()).slice(-2);
+  var date = String('00' + theDate.getDate()).slice(-2);
+  var hour = String('00' + theDate.getHours()).slice(-2);
+  var minute = String('00' + theDate.getMinutes()).slice(-2);
+  
+  var dateCode = minute + hour + date + month + year;
+  return dateCode;
+  
+}
+
+// Convert a date object into a string for display
+function dateToString( theDate ) {
+  
+  var year = theDate.getFullYear();
+  var month = String('00' + (theDate.getMonth()+1)).slice(-2);
+  var date = String('00' + theDate.getDate()).slice(-2);
+  var hour = String('00' + theDate.getHours()).slice(-2);
+  var minute = String('00' + theDate.getMinutes()).slice(-2);
+  
+  var dateString = month + '/' + date + '/' + year + ' at ' + hour + ':' + minute;
+  return dateString;
+  
+}
+
 // Fisher Yates algorithm for random shuffling
 // source: http://sedition.com/perl/javascript-fy.html
 function fisherYates ( myArray ) {
@@ -98,6 +126,67 @@ function preload(images, onLoadedOne, onLoadedAll) {
   
 }
 
+// Wrap up function
+function wrap_up(){
+  
+  // calculate accuracy
+  allData.acc_smaller = correct_smaller / set_smaller.length;
+  allData.acc_bigger = correct_bigger / set_bigger.length;
+  
+  // record current time
+  var curdate = new Date();
+  
+  // display appropriate finish slide
+  if (allData.acc_smaller < .8 || allData.acc_bigger < .8){
+    
+    $("#finish-yesret").hide();
+    
+  } else if (delayGroup == "short"){
+    
+    $("#finish-noret").hide();
+    $("#timeframe").text(" within the next 10 minutes ");
+    
+    // careful with the order here
+    // or change to copy by value
+    var startret = curdate;
+    $("#retstart").text(dateToString(startret));
+    var startcode = dateToCode(startret);
+    
+    var endret = startret;
+    endret.setMinutes(endret.getMinutes() + 10);
+    $("#retend").text(dateToString(endret));
+    var endcode = dateToCode(endret);
+    
+    $("#retcode").text("8302" + startcode + endcode + "2153");
+    
+    
+  } else {
+    
+    $("#finish-noret").hide();
+    $("#timeframe").text(" between 48 hours and 72 hours from now ");
+    
+    // careful with the order here
+    // or change to copy by value
+    var startret = curdate;
+    startret.setDate(startret.getDate() + 2)
+    $("#retstart").text(dateToString(startret));
+    var startcode = dateToCode(startret);
+    
+    var endret = startret;
+    endret.setDate(endret.getDate() + 1);
+    $("#retend").text(dateToString(endret));
+    var endcode = dateToCode(endret);
+    
+    $("#retcode").text("8302" + startcode + endcode + "2153");
+  
+  }
+  
+  showSlide("finished");
+  // Wait 1.5 seconds and then submit the whole experiment object to Mechanical Turk (mmturkey filters out the functions so we know we're just submitting properties [i.e. data])
+  setTimeout(function() { turk.submit(allData) }, 1500);
+  
+}
+
 // Demographic submission
 $("form").submit( function (){
                  var age = $("#demographics")[0].elements["age"].value;
@@ -105,14 +194,11 @@ $("form").submit( function (){
                  
                  if (age == "" || gender == "") {
                     $("#validated").text("Please fill out all fields before submitting.")
-                  } else {
+                 } else {
                     allData.age = age;
                     allData.gender = gender;
-                    showSlide("finished");
-                    // Wait 1.5 seconds and then submit the whole experiment object to Mechanical Turk (mmturkey filters out the functions so we know we're just submitting properties [i.e. data])
-                    setTimeout(function() { turk.submit(allData) }, 1500);
-                  }
-                  })
+                    wrap_up();
+                 }})
 
 // ## Configuration settings
 
@@ -127,6 +213,9 @@ var allKeyBindings = [
 // let the subject know which keys correspond to bigger/smaller
 $(".smaller-key").text(pSmaller ? "P" : "Q");
 $(".bigger-key").text(pSmaller ? "Q" : "P");
+
+// Randomly select delay group
+var delayGroup = (randomInteger(1) ? "short" : "long")
 
 // Initialize stimuli parameters
 var stimdir = "stim/";
@@ -184,6 +273,8 @@ var allData = {
   
   keyBindings: myKeyBindings,
   fingerprintData: fingerprint,
+  counterbalance: counterbalance,
+  delaygroup: delayGroup,
   trialData: [], // populated each trial
   
 }
@@ -208,14 +299,6 @@ var experiment = {
   
   // The function that gets called when the sequence is finished.
   end: function() {
-    
-    // Calculate accuracy
-    allData.acc_smaller = correct_smaller / set_smaller.length;
-    allData.acc_bigger = correct_bigger / set_bigger.length;
-    
-    // Update the finished slide
-    //if (allData.acc_smaller >= .8 && allData.acc_bigger >= .8){
-    //}
     
     // Show the demographics slide.
     showSlide("demo");
