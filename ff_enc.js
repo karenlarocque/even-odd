@@ -157,7 +157,7 @@ function wrap_up(){
     $("#retend").text(dateToString(endret));
     var endcode = dateToCode(endret);
     
-    $("#retcode").text("8302" + startcode + endcode + "2153");
+    $("#retcode").text("8302" + startcode + endcode + "2153s");
     
     
   } else {
@@ -177,7 +177,7 @@ function wrap_up(){
     $("#retend").text(dateToString(endret));
     var endcode = dateToCode(endret);
     
-    $("#retcode").text("8302" + startcode + endcode + "2153");
+    $("#retcode").text("8302" + startcode + endcode + "2153l");
   
   }
   
