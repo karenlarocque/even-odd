@@ -140,6 +140,12 @@ for (var i = 0; i < S4.length; i++){
 // Shuffle
 fisherYates(trialOrder);
 
+// For correct / incorrect
+var set_bigger = JSON.parse(bigger);
+var set_smaller = JSON.parse(smaller);
+var correct_bigger = 0;
+var correct_smaller = 0;
+
 // ## Start the experiment
 
 // Hide our filler image
@@ -161,7 +167,7 @@ var allData = {
   
   keyBindings: myKeyBindings,
   fingerprintData: fingerprint,
-  trialData: [] // populated each trial
+  trialData: [], // populated each trial
   
 }
 
@@ -185,6 +191,10 @@ var experiment = {
   
   // The function that gets called when the sequence is finished.
   end: function() {
+    
+    // Calculate accuracy
+    allData.acc_smaller = correct_smaller / set_smaller.length;
+    allData.acc_bigger = correct_bigger / set_bigger.length;
     
     // Show the finish slide.
     showSlide("finished");
@@ -241,6 +251,17 @@ var experiment = {
             key = (keyCode == 80) ? "p" : "q";
             trial.rt = endTime - startTime;
             trial.resp = key;
+        
+        // Check if it's a stimulus that we want to assess for accuracy
+        // and if yes, assume for now that response will be incorrect
+        var answerSmaller = ((key == "p" && pSmaller) || (key == "q" && !pSmaller))
+
+        if (jQuery.inArray(trial_img.split("/")[1], set_smaller) > -1 && answerSmaller) {
+          correct_smaller += 1;
+        } else if (jQuery.inArray(trial_img.split("/")[1], set_bigger) > -1 && !answerSmaller) {
+          correct_bigger += 1;
+        }
+        
       }
     };
     
