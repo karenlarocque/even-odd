@@ -25,7 +25,7 @@ var allKeyBindings = [
 // let the subject know which keys correspond to bigger/smaller
 if (turk.previewMode) {
   $(".smaller-key").text("<hidden-for-preview>");
-  $(".smaller-key").text("<hidden-for-preview>");
+  $(".bigger-key").text("<hidden-for-preview>");
   
 } else {
   $(".smaller-key").text(pSmaller ? "P" : "Q");
