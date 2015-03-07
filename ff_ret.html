@@ -24,6 +24,26 @@
 
 
 <body>
+  
+<!-- The code screening slide. -->
+<div class="slide" id="codescreen">
+
+  <p class="block-text" style="font-weight: bold">This HIT is by invitation only and requires a code that was provided in a previous HIT.</p><br>
+
+  <div class="block-text">
+
+    <form id = "getcode" action="javascript:myFunction(){return};">
+      Please enter the code provided and click "Submit" to continue. Make sure not to include any extra white space.
+      <br><br>
+      <input type = "text" name = "code">
+      <br><br>
+      <input type = "submit"</a>
+      <br><br>
+      <span id="validated" style="color: red; font-weight: bold"><span>
+    </form>
+  
+</div>
+</div>
 
 <!-- The instructions slide. -->
 <div class="slide" id="instructions">
@@ -54,13 +74,14 @@
   
   <div style="width: 120; height: 120; display:inline-block">
     <img src="images/cookiejar_e2s1.png" style = "height: 100; width 100">
-      </div>
+  </div>
   
   <div style="width: 120; height: 120; display:inline-block">
     <img src="images/cookiejar_e2s2.png" style="height: 100; width: 100">
-      </div>
+  </div>
  
   <p class="block-text">If you aren't sure, please take your best guess.</p>
+  <br>
   
 	<!-- Button to start the experiment. <code>this.blur()</code> removes the focus from the button, if the user pressed the button by using the keyboard, rather than the mouse. -->
 	<button type="button" onclick="this.blur(); experiment.next()">Start</button>
@@ -92,6 +113,7 @@
   <img class = "lowerleft" src="stim/aabacus/e2_s1.jpg">
   <img class = "lowerright" src="stim/aabacus/e2_s2.jpg">
 </div>
+
 
 <!-- The finish slide. -->
 <div class="slide" id="finished">

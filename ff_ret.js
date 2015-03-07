@@ -31,6 +31,86 @@ function fisherYates ( myArray ) {
   }
 }
 
+// Convert code to date object
+// assuming input already correct (validated in ("form").submit())
+function codeToDate( theCode ) {
+  
+  var minute = theCode.slice(0,2);
+  var hour = theCode.slice(2,4);
+  var date = theCode.slice(4,6);
+  var month = theCode.slice(6,8);
+  var year = theCode.slice(-4);
+  
+  if (year != 2015 || month > 11 || date > 31 || hour > 24 || minute > 60) { return 0; }
+  
+  var theDate = new Date(year, month, date, hour, minute);
+  return theDate;
+  
+}
+
+// Convert a date object into a string for display
+function dateToString( theDate ) {
+  
+  var year = theDate.getFullYear();
+  var month = String('00' + (theDate.getMonth()+1)).slice(-2);
+  var date = String('00' + theDate.getDate()).slice(-2);
+  var hour = String('00' + theDate.getHours()).slice(-2);
+  var minute = String('00' + theDate.getMinutes()).slice(-2);
+  
+  var dateString = month + '/' + date + '/' + year + ' at ' + hour + ':' + minute;
+  return dateString;
+  
+}
+
+// ## Code validation
+$("form").submit( function (){
+                 
+                 $("#validated").text("")
+                 var code = $("#getcode")[0].elements["code"].value;
+                 
+                 // is the format valid
+                 if (code.length == 33 &&
+                     code.slice(0,4) == "8302" &&
+                     (code.slice(-5) == "2153s" || code.slice(-5) == "2153l") &&
+                     !isNaN(code.slice(0,-1))){
+                 
+
+                   var startDate = codeToDate(code.slice(4,16))
+                   var endDate = codeToDate(code.slice(16,28))
+                   var curDate = new Date();
+                 
+                   // does the format contain two valid dates
+                   if (startDate && endDate && startDate < endDate) {
+                 
+                     // too soon
+                     if (startDate > curDate){
+                 
+                       $("#validated").text("This code is only valid for use between " + dateToString(startDate) + " and " + dateToString(endDate) + ". Please come back soon!");
+                 
+                     // too late
+                     } else if (endDate < curDate) {
+                 
+                       $("#validated").text("This code expired on " + dateToString(endDate));
+                 
+                     // just right!
+                     } else {
+                 
+                       showSlide("instructions");
+                 
+                     }
+                 
+                   } else {
+                 
+                     $("#validated").text("Invalid code. Please enter a valid code.")
+                 
+                   }
+                 
+                 } else {
+                   $("#validated").text("Invalid code. Please enter a valid code.")
+                 }
+
+})
+
 // ## Preloading functions
 
 // Function called after each image is loaded
@@ -44,7 +124,7 @@ function onLoadedOne() {
 
 // Function called once all images have been successfully loaded
 function onLoadedAll() {
-  showSlide("instructions");
+  showSlide("codescreen");
 }
 
 // Preload function
