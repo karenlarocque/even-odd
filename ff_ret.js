@@ -169,19 +169,19 @@ var experiment = {
     } else {
       
       $("#finish-nocheckin").hide();
-      $("#timeframe").text(" between 48 hours and 72 hours from now ");
+      $("#timeframe").text(" between 60 hours and 84 hours from now ");
       
       // careful with the order here
       // or change to copy by value
       var curdate = new Date();
       
       var startret = curdate;
-      startret.setDate(startret.getDate() + 2)
+      startret.setHours(startret.getHours() + 60)
       $("#checkstart").text(dateToString(startret));
       var startcode = dateToCode(startret);
       
       var endret = startret;
-      endret.setDate(endret.getDate() + 1);
+      endret.setHours(endret.getHours() + 24);
       $("#checkend").text(dateToString(endret));
       var endcode = dateToCode(endret);
       

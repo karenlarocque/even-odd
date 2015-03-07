@@ -275,17 +275,17 @@ function wrap_up(){
   } else {
     
     $("#finish-noret").hide();
-    $("#timeframe").text(" between 48 hours and 72 hours from now ");
+    $("#timeframe").text(" between 60 hours and 84 hours from now ");
     
     // careful with the order here
     // or change to copy by value
     var startret = curdate;
-    startret.setDate(startret.getDate() + 2)
+    startret.setHours(startret.getHours() + 60)
     $("#retstart").text(dateToString(startret));
     var startcode = dateToCode(startret);
     
     var endret = startret;
-    endret.setDate(endret.getDate() + 1);
+    endret.setHours(endret.getHours() + 24);
     $("#retend").text(dateToString(endret));
     var endcode = dateToCode(endret);
     
