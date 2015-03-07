@@ -49,24 +49,27 @@ $(".upperleft, .upperright, .lowerleft, .lowerright").hide();
 
 // Disable buttons if in preview mode
 if (turk.previewMode) {
-  $("button").disabled = true;
+  $("button")[0].disabled = true;
 }
 
-// Show preload slide and load
+// ## Show codescreen slide
+showSlide("codescreen");
+
+// ## Preloading
 
 // function called once all images have been successfully loaded
 function onLoadedAll() {
-  showSlide("codescreen");
+  experiment.next();
 }
 
 // preload images
-showSlide("preload");
-$("#num-total").text(preload_imgs.length);
-preload(preload_imgs,
+function preload_wrap(){
+  showSlide("preload");
+  $("#num-total").text(preload_imgs.length);
+  preload(preload_imgs,
         onLoadedOne,
         onLoadedAll);
-console.log('here');
-
+}
 
 
 // ## Code validation
