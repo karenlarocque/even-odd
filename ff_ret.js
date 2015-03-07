@@ -68,51 +68,52 @@ console.log('here');
 var code = "";
 $("form").submit( function (){
                  
-                 $("#validated").text("")
-                 code = $("#getcode")[0].elements["code"].value; //global scope, try to fix later
+  $("#validated").text("")
+  code = $("#getcode")[0].elements["code"].value; //global scope, try to fix later
+  
+  // screen for invalid format
+  if (!(code.length == 33 &&
+      code.slice(0,4) == "8302" &&
+      (code.slice(-5) == "2153s" || code.slice(-5) == "2153l") &&
+      !isNaN(code.slice(0,-1)))) {
                  
-                 // is the format valid
-                 if (code.length == 33 &&
-                     code.slice(0,4) == "8302" &&
-                     (code.slice(-5) == "2153s" || code.slice(-5) == "2153l") &&
-                     !isNaN(code.slice(0,-1))){
+                 $("#validated").text("Invalid code. Please enter a valid code.");
+                 return;
                  
+  }
+  
+  // convert to date
+  var startDate = codeToDate(code.slice(4,16))
+  var endDate = codeToDate(code.slice(16,28))
+  var curDate = new Date();
                  
-                 var startDate = codeToDate(code.slice(4,16))
-                 var endDate = codeToDate(code.slice(16,28))
-                 var curDate = new Date();
+  // screen for invalid dates
+  if (!startDate || !endDate || startDate > endDate){
+                 $("#validated").text("Invalid code. Please enter a valid code.");
+                 return;
+  }
                  
-                 // does the format contain two valid dates
-                 if (startDate && endDate && startDate < endDate) {
-                 
-                 // too soon
-                 if (startDate > curDate){
+  // check time
+      
+  // too soon
+  if (startDate > curDate){
                  
                  $("#validated").text("This code is only valid for use between " + dateToString(startDate) + " and " + dateToString(endDate) + ". Please come back soon!");
                  
-                 // too late
-                 } else if (endDate < curDate) {
+  // too late
+  } else if (endDate < curDate) {
                  
                  $("#validated").text("This code expired on " + dateToString(endDate));
                  
-                 // just right!
-                 } else {
+  // just right!
+  } else {
                  
                  showSlide("instructions");
                  
-                 }
+  }
+
+})
                  
-                 } else {
-                 
-                 $("#validated").text("Invalid code. Please enter a valid code.")
-                 
-                 }
-                 
-                 } else {
-                 $("#validated").text("Invalid code. Please enter a valid code.")
-                 }
-                 
-                 })
 
 
 
