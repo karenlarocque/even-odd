@@ -23,8 +23,8 @@ $("form").submit( function (){
                        code.slice(-4) == "0198" &&
                        !isNaN(code))) {
                  
-                 $("#validated").text("Invalid code. Please enter a valid code.");
-                 return;
+                   $("#validated").text("Invalid code. Please enter a valid code.");
+                   return;
                  
                  }
                  
@@ -35,8 +35,8 @@ $("form").submit( function (){
                  
                  // screen for invalid dates
                  if (!startDate || !endDate || startDate > endDate){
-                 $("#validated").text("Invalid code. Please enter a valid code.");
-                 return;
+                   $("#validated").text("Invalid code. Please enter a valid code.");
+                   return;
                  }
                  
                  // check time
@@ -44,18 +44,25 @@ $("form").submit( function (){
                  // too soon
                  if (startDate > curDate){
                  
-                 $("#validated").text("This code is only valid for use between " + dateToString(startDate) + " and " + dateToString(endDate) + ". Please come back soon!");
+                   $("#validated").text("This code is only valid for use between " + dateToString(startDate) + " and " + dateToString(endDate) + ". Please come back soon!");
                  
                  // too late
                  } else if (endDate < curDate) {
                  
-                 $("#validated").text("This code expired on " + dateToString(endDate));
+                   $("#validated").text("This code expired on " + dateToString(endDate));
                  
                  // just right!
                  } else {
                  
-                 allData.entrycode = code;
-                 showSlide("instructions");
+                    if (turk.previewMode) {
+                 
+                      $("#validated").text("This code is valid but cannot submit while in preview mode.");
+                      return;
+                 
+                    }
+                 
+                   allData.entrycode = code;
+                   showSlide("instructions");
                  
                  
                  }
