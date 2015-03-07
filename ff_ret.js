@@ -63,7 +63,7 @@ function onLoadedAll() {
 }
 
 // preload images
-function preload_wrap(){
+function preload_wrap() {
   showSlide("preload");
   $("#num-total").text(preload_imgs.length);
   preload(preload_imgs,
@@ -115,6 +115,13 @@ $("form").submit( function (){
                  
   // just right!
   } else {
+                 
+                 if (turk.previewMode) {
+                 
+                   $("#validated").text("This code is valid but cannot submit while in preview mode.");
+                   return;
+                 
+                 }
                  
                  showSlide("instructions");
                  

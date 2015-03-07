@@ -71,22 +71,29 @@ var correct_smaller = 0;
 // Hide our filler image
 $(".centered").hide();
 
+// Disable buttons if in preview mode
+if (turk.previewMode) {
+  $("button")[0].disabled = true;
+}
+
+// ## Show instructions
+showSlide("instructions");
 
 // ## Preload images
 
 // function called once all images have been successfully loaded
 function onLoadedAll() {
-  showSlide("instructions");
+  experiment.leadin();
 }
 
 // preload images
-showSlide("preload");
-$("#num-total").text(trialOrder.length);
-preload(trialOrder,
+function preload_wrap() {
+  showSlide("preload");
+  $("#num-total").text(trialOrder.length);
+  preload(trialOrder,
         onLoadedOne,
         onLoadedAll);
-console.log('here');
-
+}
 
 
 // ## Prep data storage
