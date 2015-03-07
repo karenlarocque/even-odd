@@ -2,7 +2,7 @@
 <html>
 <head>
   
-	<title>Feature_Forgetting (Retrieval)</title>
+	<title>FF(R)</title>
   
 	<!-- Include the [jQuery library](http://jquery.com/), which helps you manipulate HTML elements from JS. -->
 	<script src="jquery-1.11.2.min.js"></script>
@@ -18,6 +18,9 @@
   
   <!-- Stimuli -->
   <script src="stimuli.json"></script>
+  
+  <!-- Helper functions -->
+  <script src="ff_helper.js"></script>
   
 </head>
 
@@ -122,16 +125,14 @@
   </div>
   <div class="block-text" id="finish-yescheckin">
     You're finished with this experiment - thanks for participating! Your data are being submitted to Mechanical Turk. <br><br>
-    <b>You now qualify for one final HIT! This new experiment will take less than a minute and pays $0.10.</b><br><br>
+    <b>You now qualify for one final experiment! This new experiment will take less than a minute and pays $0.10.</b><br><br>
     Please visit <a href="" id="checklink">this HIT</a> <span id = "timeframe">{{}}</span>(between <span id = "checkstart">{{}}></span> and <span id = "checkend">{{}}</span>), and enter the following code: <br>
     <span id = "checkcode" style = "color: red">{{}}</span>.
     
   </div>
 </div>
 
-<!-- Include the <a href="experiment.html">JavaScript file for the experiment</a>. As written, that script immediately executes commands, so we include it here at the end of the HTML file to ensure that resources referenced by the script actually exist. -->
-<!-- [onload]: https://developer.mozilla.org/en/DOM/window.onload -->
-<!-- [domReady]: http://api.jquery.com/ready/ -->
+<!-- Include the JavaScript file for the experiment. As written, that script immediately executes commands, so we include it here at the end of the HTML file to ensure that resources referenced by the script actually exist. -->
 <script src="ff_ret.js"></script>
 
 </body>

@@ -7,179 +7,6 @@
 // 4. If there are more trials left, <code>experiment.next()</code> shows the next trial, records the current time for computing reaction time, and sets up a listener for a key press.
 // 5. The mouse click listener, when it detects a click, constructs a data object, which includes the presented stimulus, which version was selected, and RT (current time - start time). This entire object gets pushed into the <code>experiment.data</code> array. Then we show a blank screen and wait 500 milliseconds before calling <code>experiment.next()</code> again.
 
-// ## Helper functions
-
-// Shows slides
-function showSlide(id) {
-  // Hide all slides
-	$(".slide").hide();
-	// Show just the slide we want to show
-	$("#"+id).show();
-}
-
-// Fisher Yates algorithm for random shuffling
-// source: http://sedition.com/perl/javascript-fy.html
-function fisherYates ( myArray ) {
-  var i = myArray.length;
-  if ( i == 0 ) return false;
-  while ( --i ) {
-    var j = Math.floor( Math.random() * ( i + 1 ) );
-    var tempi = myArray[i];
-    var tempj = myArray[j];
-    myArray[i] = tempj;
-    myArray[j] = tempi;
-  }
-}
-
-// Convert code to date object
-// assuming input already correct (validated in ("form").submit())
-function codeToDate( theCode ) {
-  
-  var minute = theCode.slice(0,2);
-  var hour = theCode.slice(2,4);
-  var date = theCode.slice(4,6);
-  var month = theCode.slice(6,8);
-  var year = theCode.slice(-4);
-  
-  if (year != 2015 || month > 11 || date > 31 || hour > 24 || minute > 60) { return 0; }
-  
-  var theDate = new Date(year, month, date, hour, minute);
-  return theDate;
-  
-}
-
-// Convert a date object into a string for display
-function dateToString( theDate ) {
-  
-  var year = theDate.getFullYear();
-  var month = String('00' + (theDate.getMonth()+1)).slice(-2);
-  var date = String('00' + theDate.getDate()).slice(-2);
-  var hour = String('00' + theDate.getHours()).slice(-2);
-  var minute = String('00' + theDate.getMinutes()).slice(-2);
-  
-  var dateString = month + '/' + date + '/' + year + ' at ' + hour + ':' + minute;
-  return dateString;
-  
-}
-
-// Convert a date object into a string for checkin code
-function dateToCode( theDate ) {
-  
-  var year = theDate.getFullYear();
-  var month = String('00' + theDate.getMonth()).slice(-2);
-  var date = String('00' + theDate.getDate()).slice(-2);
-  var hour = String('00' + theDate.getHours()).slice(-2);
-  var minute = String('00' + theDate.getMinutes()).slice(-2);
-  
-  var dateCode = minute + hour + date + month + year;
-  return dateCode;
-  
-}
-
-var code = "";
-// ## Code validation
-$("form").submit( function (){
-                 
-                 $("#validated").text("")
-                 code = $("#getcode")[0].elements["code"].value; //global scope, try to fix later
-                 
-                 // is the format valid
-                 if (code.length == 33 &&
-                     code.slice(0,4) == "8302" &&
-                     (code.slice(-5) == "2153s" || code.slice(-5) == "2153l") &&
-                     !isNaN(code.slice(0,-1))){
-                 
-
-                   var startDate = codeToDate(code.slice(4,16))
-                   var endDate = codeToDate(code.slice(16,28))
-                   var curDate = new Date();
-                 
-                   // does the format contain two valid dates
-                   if (startDate && endDate && startDate < endDate) {
-                 
-                     // too soon
-                     if (startDate > curDate){
-                 
-                       $("#validated").text("This code is only valid for use between " + dateToString(startDate) + " and " + dateToString(endDate) + ". Please come back soon!");
-                 
-                     // too late
-                     } else if (endDate < curDate) {
-                 
-                       $("#validated").text("This code expired on " + dateToString(endDate));
-                 
-                     // just right!
-                     } else {
-                 
-                       showSlide("instructions");
-                 
-                     }
-                 
-                   } else {
-                 
-                     $("#validated").text("Invalid code. Please enter a valid code.")
-                 
-                   }
-                 
-                 } else {
-                   $("#validated").text("Invalid code. Please enter a valid code.")
-                 }
-
-})
-
-// ## Preloading functions
-
-// Function called after each image is loaded
-
-var numLoadedImages = 0;
-
-function onLoadedOne() {
-  numLoadedImages++;
-  $("#num-loaded").text(numLoadedImages);
-}
-
-// Function called once all images have been successfully loaded
-function onLoadedAll() {
-  showSlide("codescreen");
-}
-
-// Preload function
-
-function preload(images, onLoadedOne, onLoadedAll) {
-  
-  var remainingImages = images.slice();
-  var finished = false;
-  
-  // How long to wait in between loading images
-  var loadDelayInterval = 0;
-  
-  var worker = function() {
-    
-    if (remainingImages.length == 0) {
-      if (!finished) {
-        finished = true;
-        setTimeout(onLoadedAll, loadDelayInterval);
-      }
-    } else {
-      
-      var src = remainingImages.shift();
-      
-      var image = new Image();
-      image.onload = function() {
-        onLoadedOne();
-        setTimeout(worker, loadDelayInterval);
-      };
-      image.src = src;
-    }
-    
-  };
-  
-  // Load images 6 at a time
-  var concurrent = 6;
-  for(var i = 0; i < concurrent; i++) {
-    setTimeout(worker, 20 - i);
-  };
-  
-}
 
 
 // ## Configuration settings
@@ -213,12 +40,21 @@ for (var i = 0; i < stim.length; i++){
 // Shuffle
 fisherYates(trialOrder);
 
+
+
 // ## Start the experiment
 
 // Hide our filler images
 $(".upperleft, .upperright, .lowerleft, .lowerright").hide();
 
 // Show preload slide and load
+
+// function called once all images have been successfully loaded
+function onLoadedAll() {
+  showSlide("codescreen");
+}
+
+// preload images
 showSlide("preload");
 $("#num-total").text(preload_imgs.length);
 preload(preload_imgs,
@@ -227,9 +63,60 @@ preload(preload_imgs,
 console.log('here');
 
 
-// ## The main event
 
-// Prep data storage
+// ## Code validation
+var code = "";
+$("form").submit( function (){
+                 
+                 $("#validated").text("")
+                 code = $("#getcode")[0].elements["code"].value; //global scope, try to fix later
+                 
+                 // is the format valid
+                 if (code.length == 33 &&
+                     code.slice(0,4) == "8302" &&
+                     (code.slice(-5) == "2153s" || code.slice(-5) == "2153l") &&
+                     !isNaN(code.slice(0,-1))){
+                 
+                 
+                 var startDate = codeToDate(code.slice(4,16))
+                 var endDate = codeToDate(code.slice(16,28))
+                 var curDate = new Date();
+                 
+                 // does the format contain two valid dates
+                 if (startDate && endDate && startDate < endDate) {
+                 
+                 // too soon
+                 if (startDate > curDate){
+                 
+                 $("#validated").text("This code is only valid for use between " + dateToString(startDate) + " and " + dateToString(endDate) + ". Please come back soon!");
+                 
+                 // too late
+                 } else if (endDate < curDate) {
+                 
+                 $("#validated").text("This code expired on " + dateToString(endDate));
+                 
+                 // just right!
+                 } else {
+                 
+                 showSlide("instructions");
+                 
+                 }
+                 
+                 } else {
+                 
+                 $("#validated").text("Invalid code. Please enter a valid code.")
+                 
+                 }
+                 
+                 } else {
+                 $("#validated").text("Invalid code. Please enter a valid code.")
+                 }
+                 
+                 })
+
+
+
+// ## Prep data storage
 var allData = {
   
   fingerprintData: fingerprint,
@@ -237,12 +124,14 @@ var allData = {
   
 }
 
-// Run experiment
+
+
+// ## Run experiment
 var experiment = {
   
   // Trials
-  // deep copy since we are using .shift() but my want to retain this list
-  trials: trialOrder,
+  // deep copy since we are using .shift() but want to retain record of trial order
+  trials: $.extend(true, [], trialOrder),
   
   // The function that gets called when the sequence is finished.
   end: function() {

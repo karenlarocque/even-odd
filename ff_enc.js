@@ -1,204 +1,16 @@
 // ## High-level overview
 // Things happen in this order:
 // 
-// 1. Compute randomization parameters (which keys to press for even/odd and trial order), fill in the template <code>{{}}</code> slots that indicate which keys to press for even/odd, and show the instructions slide.
+// 1. Compute randomization parameters (which keys to press for even/odd and trial order), fill in the template {}} slots that indicate which keys to press for even/odd, and show the instructions slide.
 // 2. Set up the experiment sequence object.
-// 3. When the subject clicks the start button, it calls <code>experiment.next()</code>
-// 4. <code>experiment.next()</code> checks if there are any trials left to do. If there aren't, it calls <code>experiment.end()</code>, which shows the finish slide, waits for 1.5 seconds, and then uses mmturkey to submit to Turk.
-// 5. If there are more trials left, <code>experiment.next()</code> shows the next trial, records the current time for computing reaction time, constructs a data object (stimulus, RT, & key press), and sets up a listener for a key press.
-// 6. The key press listener records the first P or Q response that is pressed. Regardless of the input, the stimulus is displayed on the screen for 200 ms followed by a blank screen for 1800 ms. Before the next trial advances, the data object gets pushed into the <code>experiment.data</code> array.
+// 3. When the subject clicks the start button, it calls experiment.next()
+// 4. experiment.next() checks if there are any trials left to do. If there aren't, it pulls up the demographics slide.
+// 5. If there are more trials left, experiment.next() shows the next trial, records the current time for computing reaction time, constructs a data object (stimulus, RT, & key press), and sets up a listener for a key press.
+// 6. The key press listener records the first P or Q response that is pressed. Regardless of the input, the stimulus is displayed on the screen for 200 ms followed by a blank screen for 1800 ms. Before the next trial advances, the trial data object gets pushed into the allData array.
+// 7. Demographic information is collected.
+// 8. We show the finish slide, waits for 1.5 seconds, and then uses mmturkey to submit to Turk. If the subject's accuracy is high enough, a code for the second part is provided on this finish slide.
 
-// ## Helper functions
 
-// Shows slides
-function showSlide(id) {
-  // Hide all slides
-	$(".slide").hide();
-	// Show just the slide we want to show
-	$("#"+id).show();
-}
-
-// Get a random integer less than n
-function randomInteger(n) {
-	return Math.floor(Math.random()*n);
-}
-
-// Get a random element from an array (e.g., <code>random_element([4,8,7])</code> could return 4, 8, or 7). This is useful for condition randomization
-function randomElement(array) {
-  return array[randomInteger(array.length)];
-}
-
-// Convert a date object into a string for retrieval code
-function dateToCode( theDate ) {
-  
-  var year = theDate.getFullYear();
-  var month = String('00' + theDate.getMonth()).slice(-2);
-  var date = String('00' + theDate.getDate()).slice(-2);
-  var hour = String('00' + theDate.getHours()).slice(-2);
-  var minute = String('00' + theDate.getMinutes()).slice(-2);
-  
-  var dateCode = minute + hour + date + month + year;
-  return dateCode;
-  
-}
-
-// Convert a date object into a string for display
-function dateToString( theDate ) {
-  
-  var year = theDate.getFullYear();
-  var month = String('00' + (theDate.getMonth()+1)).slice(-2);
-  var date = String('00' + theDate.getDate()).slice(-2);
-  var hour = String('00' + theDate.getHours()).slice(-2);
-  var minute = String('00' + theDate.getMinutes()).slice(-2);
-  
-  var dateString = month + '/' + date + '/' + year + ' at ' + hour + ':' + minute;
-  return dateString;
-  
-}
-
-// Fisher Yates algorithm for random shuffling
-// source: http://sedition.com/perl/javascript-fy.html
-function fisherYates ( myArray ) {
-  var i = myArray.length;
-  if ( i == 0 ) return false;
-  while ( --i ) {
-    var j = Math.floor( Math.random() * ( i + 1 ) );
-    var tempi = myArray[i];
-    var tempj = myArray[j];
-    myArray[i] = tempj;
-    myArray[j] = tempi;
-  }
-}
-                
-
-// ## Preloading functions
-
-// Function called after each image is loaded
-
-var numLoadedImages = 0;
-
-function onLoadedOne() {
-  numLoadedImages++;
-  $("#num-loaded").text(numLoadedImages);
-}
-
-// Function called once all images have been successfully loaded
-function onLoadedAll() {
-  showSlide("instructions");
-}
-
-// Preload function
-
-function preload(images, onLoadedOne, onLoadedAll) {
-  
-  var remainingImages = images.slice();
-  var finished = false;
-  
-  // How long to wait in between loading images
-  var loadDelayInterval = 0;
-  
-  var worker = function() {
-    
-    if (remainingImages.length == 0) {
-      if (!finished) {
-        finished = true;
-        setTimeout(onLoadedAll, loadDelayInterval);
-      }
-    } else {
-      
-      var src = remainingImages.shift();
-      
-      var image = new Image();
-      image.onload = function() {
-        onLoadedOne();
-        setTimeout(worker, loadDelayInterval);
-      };
-      image.src = src;
-    }
-    
-  };
-  
-  // Load images 6 at a time
-  var concurrent = 6;
-  for(var i = 0; i < concurrent; i++) {
-    setTimeout(worker, 20 - i);
-  };
-  
-}
-
-// Wrap up function
-function wrap_up(){
-  
-  // calculate accuracy
-  allData.acc_smaller = correct_smaller / set_smaller.length;
-  allData.acc_bigger = correct_bigger / set_bigger.length;
-  
-  // record current time
-  var curdate = new Date();
-  
-  // display appropriate finish slide
-  if (allData.acc_smaller < .8 || allData.acc_bigger < .8){
-    
-    $("#finish-yesret").hide();
-    
-  } else if (delayGroup == "short"){
-    
-    $("#finish-noret").hide();
-    $("#timeframe").text(" within the next 10 minutes ");
-    
-    // careful with the order here
-    // or change to copy by value
-    var startret = curdate;
-    $("#retstart").text(dateToString(startret));
-    var startcode = dateToCode(startret);
-    
-    var endret = startret;
-    endret.setMinutes(endret.getMinutes() + 10);
-    $("#retend").text(dateToString(endret));
-    var endcode = dateToCode(endret);
-    
-    $("#retcode").text("8302" + startcode + endcode + "2153s");
-    
-    
-  } else {
-    
-    $("#finish-noret").hide();
-    $("#timeframe").text(" between 48 hours and 72 hours from now ");
-    
-    // careful with the order here
-    // or change to copy by value
-    var startret = curdate;
-    startret.setDate(startret.getDate() + 2)
-    $("#retstart").text(dateToString(startret));
-    var startcode = dateToCode(startret);
-    
-    var endret = startret;
-    endret.setDate(endret.getDate() + 1);
-    $("#retend").text(dateToString(endret));
-    var endcode = dateToCode(endret);
-    
-    $("#retcode").text("8302" + startcode + endcode + "2153l");
-  
-  }
-  
-  showSlide("finished");
-  // Wait 1.5 seconds and then submit the whole experiment object to Mechanical Turk (mmturkey filters out the functions so we know we're just submitting properties [i.e. data])
-  setTimeout(function() { turk.submit(allData) }, 1500);
-  
-}
-
-// Demographic submission
-$("form").submit( function (){
-                 var age = $("#demographics")[0].elements["age"].value;
-                 var gender = $("#demographics")[0].elements["gender"].value;
-                 
-                 if (age == "" || gender == "") {
-                    $("#validated").text("Please fill out all fields before submitting.")
-                 } else {
-                    allData.age = age;
-                    allData.gender = gender;
-                    wrap_up();
-                 }})
 
 // ## Configuration settings
 
@@ -246,18 +58,28 @@ for (var i = 0; i < S4.length; i++){
 // Shuffle
 fisherYates(trialOrder);
 
-// For correct / incorrect
+// Keep track of correct / incorrect answers for a subset of stimuli
 var set_bigger = JSON.parse(bigger);
 var set_smaller = JSON.parse(smaller);
 var correct_bigger = 0;
 var correct_smaller = 0;
 
-// ## Start the experiment
+
+
+// #### Start the experiment
 
 // Hide our filler image
 $(".centered").hide();
 
-// Show preload slide and load
+
+// ## Preload images
+
+// function called once all images have been successfully loaded
+function onLoadedAll() {
+  showSlide("instructions");
+}
+
+// preload images
 showSlide("preload");
 $("#num-total").text(trialOrder.length);
 preload(trialOrder,
@@ -266,9 +88,8 @@ preload(trialOrder,
 console.log('here');
 
 
-// ## The main event
 
-// Prep data storage
+// ## Prep data storage
 var allData = {
   
   keyBindings: myKeyBindings,
@@ -279,7 +100,9 @@ var allData = {
   
 }
 
-// Run experiment
+
+
+// ## Run experiment
 var experiment = {
   
   // Trials
@@ -381,3 +204,83 @@ var experiment = {
 
   }
 }
+
+
+
+// ## Submit demographic submission
+$("form").submit( function (){
+                 var age = $("#demographics")[0].elements["age"].value;
+                 var gender = $("#demographics")[0].elements["gender"].value;
+                 
+                 if (age == "" || gender == "") {
+                 $("#validated").text("Please fill out all fields before submitting.")
+                 } else {
+                 allData.age = age;
+                 allData.gender = gender;
+                 wrap_up();
+                 }})
+
+
+
+// ## Wrap up function for end of experiment
+function wrap_up(){
+  
+  // calculate accuracy
+  allData.acc_smaller = correct_smaller / set_smaller.length;
+  allData.acc_bigger = correct_bigger / set_bigger.length;
+  
+  // record current time
+  var curdate = new Date();
+  
+  // display appropriate finish slide
+  if (allData.acc_smaller < .8 || allData.acc_bigger < .8){
+    
+    $("#finish-yesret").hide();
+    
+  } else if (delayGroup == "short"){
+    
+    $("#finish-noret").hide();
+    $("#timeframe").text(" within the next 10 minutes ");
+    
+    // careful with the order here
+    // or change to copy by value
+    var startret = curdate;
+    $("#retstart").text(dateToString(startret));
+    var startcode = dateToCode(startret);
+    
+    var endret = startret;
+    endret.setMinutes(endret.getMinutes() + 10);
+    $("#retend").text(dateToString(endret));
+    var endcode = dateToCode(endret);
+    
+    $("#retcode").text("8302" + startcode + endcode + "2153s");
+    
+    
+  } else {
+    
+    $("#finish-noret").hide();
+    $("#timeframe").text(" between 48 hours and 72 hours from now ");
+    
+    // careful with the order here
+    // or change to copy by value
+    var startret = curdate;
+    startret.setDate(startret.getDate() + 2)
+    $("#retstart").text(dateToString(startret));
+    var startcode = dateToCode(startret);
+    
+    var endret = startret;
+    endret.setDate(endret.getDate() + 1);
+    $("#retend").text(dateToString(endret));
+    var endcode = dateToCode(endret);
+    
+    $("#retcode").text("8302" + startcode + endcode + "2153l");
+    
+  }
+  
+  showSlide("finished");
+  // Wait 1.5 seconds and then submit the whole experiment object to Mechanical Turk (mmturkey filters out the functions so we know we're just submitting properties [i.e. data])
+  setTimeout(function() { turk.submit(allData) }, 1500);
+  
+}
+
+
