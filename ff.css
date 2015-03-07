@@ -81,8 +81,8 @@ button[disabled] {
 }
 
 .centered {
-	width: 300;
-  height: 300;
+	width: 250;
+  height: 250;
   position: fixed;
  	top: 50%;
   left: 50%;
@@ -90,8 +90,8 @@ button[disabled] {
 }
 
 .lowerleft {
-	width: 300;
-  height: 300;
+	width: 250;
+  height: 250;
   position: fixed;
  	top: 50%;
   left: 50%;
@@ -99,8 +99,8 @@ button[disabled] {
 }
 
 .lowerright {
-	width: 300;
-  height: 300;
+	width: 250;
+  height: 250;
   position: fixed;
  	top: 50%;
   left: 50%;
@@ -108,8 +108,8 @@ button[disabled] {
 }
 
 .upperleft {
-	width: 300;
-  height: 300;
+	width: 250;
+  height: 250;
   position: fixed;
  	top: 50%;
   left: 50%;
@@ -117,8 +117,8 @@ button[disabled] {
 }
 
 .upperright {
-	width: 300;
-  height: 300;
+	width: 250;
+  height: 250;
   position: fixed;
  	top: 50%;
   left: 50%;

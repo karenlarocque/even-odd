@@ -245,6 +245,11 @@ function wrap_up(){
     $("#finish-yesret").hide();
     allData.exitcode = "none";
     
+    showSlide("finished");
+    // Wait 1.5 seconds and then submit the whole experiment object to Mechanical Turk (mmturkey filters out the functions so we know we're just submitting properties [i.e. data])
+    setTimeout(function() { turk.submit(allData) }, 1500);
+    
+    
   } else if (delayGroup == "short"){
     
     $("#finish-noret").hide();
@@ -263,6 +268,8 @@ function wrap_up(){
     
     $("#retcode").text("8302" + startcode + endcode + "2153s");
     allData.exitcode = ("8302" + startcode + endcode + "2153s");
+    
+    showSlide("finished");
     
     
   } else {
@@ -285,11 +292,11 @@ function wrap_up(){
     $("#retcode").text("8302" + startcode + endcode + "2153l");
     allData.exitcode = ("8302" + startcode + endcode + "2153l");
     
+    showSlide("finished");
+    
   }
   
-  showSlide("finished");
-  // Wait 1.5 seconds and then submit the whole experiment object to Mechanical Turk (mmturkey filters out the functions so we know we're just submitting properties [i.e. data])
-  setTimeout(function() { turk.submit(allData) }, 1500);
+  
   
 }
 
