@@ -1,6 +1,13 @@
 // ## High-level overview
 // This check-in is to equate the short and long delay groups in "propensity to come back after a three day delay." The only requirement is to hit the start button.
 
+// ## Prep data
+var allData = {
+  
+  fingerprintData: fingerprint
+  
+};
+
 showSlide("codescreen");
 
 // ## Code validation
@@ -47,7 +54,9 @@ $("form").submit( function (){
                  // just right!
                  } else {
                  
+                 allData.entrycode = code;
                  showSlide("instructions");
+                 
                  
                  }
                  

@@ -236,6 +236,7 @@ function wrap_up(){
   if (allData.acc_smaller < .8 || allData.acc_bigger < .8){
     
     $("#finish-yesret").hide();
+    allData.exitcode = "none";
     
   } else if (delayGroup == "short"){
     
@@ -254,6 +255,7 @@ function wrap_up(){
     var endcode = dateToCode(endret);
     
     $("#retcode").text("8302" + startcode + endcode + "2153s");
+    allData.exitcode = ("8302" + startcode + endcode + "2153s");
     
     
   } else {
@@ -274,6 +276,7 @@ function wrap_up(){
     var endcode = dateToCode(endret);
     
     $("#retcode").text("8302" + startcode + endcode + "2153l");
+    allData.exitcode = ("8302" + startcode + endcode + "2153l");
     
   }
   

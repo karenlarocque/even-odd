@@ -137,10 +137,13 @@ var experiment = {
   // The function that gets called when the sequence is finished.
   end: function() {
     
+    allData.entrycode = code;
+    
     // display appropriate finish slide
     if (allData.delayGroup == "long"){
       
       $("#finish-yescheckin").hide();
+      allData.exitcode = "none";
       
     } else {
       
@@ -162,6 +165,7 @@ var experiment = {
       var endcode = dateToCode(endret);
       
       $("#checkcode").text("0176" + startcode + endcode + "0198");
+      allData.exitcode = "0176" + startcode + endcode + "0198";
 
     }
     
