@@ -23,8 +23,14 @@ var allKeyBindings = [
 
 // Fill in the instructions template using jQuery's <code>html()</code> method. In particular,
 // let the subject know which keys correspond to bigger/smaller
-$(".smaller-key").text(pSmaller ? "P" : "Q");
-$(".bigger-key").text(pSmaller ? "Q" : "P");
+if (turk.previewMode) {
+  $(".smaller-key").text("<hidden-for-preview>");
+  $(".smaller-key").text("<hidden-for-preview>");
+  
+} else {
+  $(".smaller-key").text(pSmaller ? "P" : "Q");
+  $(".bigger-key").text(pSmaller ? "Q" : "P");
+}
 
 // Randomly select delay group
 var delayGroup = (randomInteger(1) ? "short" : "long")
