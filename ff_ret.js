@@ -47,6 +47,11 @@ fisherYates(trialOrder);
 // Hide our filler images
 $(".upperleft, .upperright, .lowerleft, .lowerright").hide();
 
+// Disable buttons if in preview mode
+if (turk.previewMode) {
+  $("button").disabled = true;
+}
+
 // Show preload slide and load
 
 // function called once all images have been successfully loaded
@@ -145,6 +150,12 @@ var experiment = {
       $("#finish-yescheckin").hide();
       allData.exitcode = "none";
       
+      // Show the finish slide.
+      showSlide("finished");
+      
+      // Wait 1.5 seconds and then submit the whole experiment object to Mechanical Turk (mmturkey filters out the functions so we know we're just submitting properties [i.e. data])
+      setTimeout(function() { turk.submit(allData) }, 1500);
+      
     } else {
       
       $("#finish-nocheckin").hide();
@@ -166,14 +177,11 @@ var experiment = {
       
       $("#checkcode").text("0176" + startcode + endcode + "0198");
       allData.exitcode = "0176" + startcode + endcode + "0198";
+      
+      showSlide("finished");
+      // user clicks button to submit
 
     }
-    
-    // Show the finish slide.
-    showSlide("finished");
-    
-    // Wait 1.5 seconds and then submit the whole experiment object to Mechanical Turk (mmturkey filters out the functions so we know we're just submitting properties [i.e. data])
-    setTimeout(function() { turk.submit(allData) }, 1500);
     
   },
   

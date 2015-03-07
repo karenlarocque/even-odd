@@ -123,10 +123,14 @@
   <div class="block-text" id="finish-yescheckin">
     You're finished with this experiment - thanks for participating! Your data are being submitted to Mechanical Turk. <br><br>
     <b>You now qualify for one final experiment! This new experiment will take less than a minute and pays $0.10.</b><br><br>
-    Please visit <a href="" id="checklink">this HIT</a> <span id = "timeframe">{{}}</span>(between <span id = "checkstart">{{}}></span> and <span id = "checkend">{{}}</span>), and enter the following code: <br>
+    Please visit <a href="https://workersandbox.mturk.com/mturk/preview?groupId=3LMOG6ZFAJPXP2VPOR009721OWMF2H" id="checklink">this HIT</a> <span id = "timeframe">{{}}</span>(between <span id = "checkstart">{{}}></span> and <span id = "checkend" target="_blank">{{}}</span>), and enter the following code: <br>
     <span id = "checkcode" style = "color: red">{{}}</span>.
-    
+    <br><br>
+    Once you have copied down the link and code, press the button to submit your data to Turk.
+    <br>
+    <button type="button" onclick="this.blur(); turk.submit(allData);">Submit</button>
   </div>
+  
 </div>
 
 <!-- Fingerprint -->
