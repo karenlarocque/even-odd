@@ -116,8 +116,17 @@
 
 
 <!-- The finish slide. -->
-<div class="slide" id="finished">
-	You're finished - thanks for participating! Submitting to Mechanical Turk...
+<div class="slide" id="finished" >
+  <div class="block-text" id="finish-nocheckin">
+    You're finished - thanks for participating! Submitting to Mechanical Turk...
+  </div>
+  <div class="block-text" id="finish-yescheckin">
+    You're finished with this experiment - thanks for participating! Your data are being submitted to Mechanical Turk. <br><br>
+    <b>You now qualify for one final HIT! This new experiment will take less than a minute and pays $0.10.</b><br><br>
+    Please visit <a href="" id="checklink">this HIT</a> <span id = "timeframe">{{}}</span>(between <span id = "checkstart">{{}}></span> and <span id = "checkend">{{}}</span>), and enter the following code: <br>
+    <span id = "checkcode" style = "color: red">{{}}</span>.
+    
+  </div>
 </div>
 
 <!-- Include the <a href="experiment.html">JavaScript file for the experiment</a>. As written, that script immediately executes commands, so we include it here at the end of the HTML file to ensure that resources referenced by the script actually exist. -->

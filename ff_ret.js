@@ -62,11 +62,26 @@ function dateToString( theDate ) {
   
 }
 
+// Convert a date object into a string for checkin code
+function dateToCode( theDate ) {
+  
+  var year = theDate.getFullYear();
+  var month = String('00' + theDate.getMonth()).slice(-2);
+  var date = String('00' + theDate.getDate()).slice(-2);
+  var hour = String('00' + theDate.getHours()).slice(-2);
+  var minute = String('00' + theDate.getMinutes()).slice(-2);
+  
+  var dateCode = minute + hour + date + month + year;
+  return dateCode;
+  
+}
+
+var code = "";
 // ## Code validation
 $("form").submit( function (){
                  
                  $("#validated").text("")
-                 var code = $("#getcode")[0].elements["code"].value;
+                 code = $("#getcode")[0].elements["code"].value; //global scope, try to fix later
                  
                  // is the format valid
                  if (code.length == 33 &&
@@ -198,8 +213,6 @@ for (var i = 0; i < stim.length; i++){
 // Shuffle
 fisherYates(trialOrder);
 
-myTrialOrder = ["accordion","altoid","apple","backpack"];
-
 // ## Start the experiment
 
 // Hide our filler images
@@ -234,6 +247,34 @@ var experiment = {
   // The function that gets called when the sequence is finished.
   end: function() {
     
+    // display appropriate finish slide
+    if (allData.delayGroup == "long"){
+      
+      $("#finish-yescheckin").hide();
+      
+    } else {
+      
+      $("#finish-nocheckin").hide();
+      $("#timeframe").text(" between 48 hours and 72 hours from now ");
+      
+      // careful with the order here
+      // or change to copy by value
+      var curdate = new Date();
+      
+      var startret = curdate;
+      startret.setDate(startret.getDate() + 2)
+      $("#checkstart").text(dateToString(startret));
+      var startcode = dateToCode(startret);
+      
+      var endret = startret;
+      endret.setDate(endret.getDate() + 1);
+      $("#checkend").text(dateToString(endret));
+      var endcode = dateToCode(endret);
+      
+      $("#checkcode").text("0176" + startcode + endcode + "0198");
+
+    }
+    
     // Show the finish slide.
     showSlide("finished");
     
@@ -247,6 +288,7 @@ var experiment = {
     
     // If the number of remaining trials is 0, we're done, so call the end function.
     if (experiment.trials.length == 0) {
+      allData.delayGroup = (code.slice(-1) == "s" ? "short" : "long");
       experiment.end();
       return;
       
