@@ -1,0 +1,90 @@
+<!-- ## Code -->
+<html>
+<head>
+  
+	<title>FF(C)</title>
+  
+	<!-- Include the [jQuery library](http://jquery.com/), which helps you manipulate HTML elements from JS. -->
+	<script src="jquery-1.11.2.min.js"></script>
+	
+	<!-- Include mmturkey: http://github.com/longouyang/mmturkey -->
+	<script src="mmturkey-0.6.js"></script>
+	
+	<!-- Include CSS sheet -->
+	<link rel="stylesheet" href="ff.css" />
+  
+  <!-- Fingerprint -->
+  <script src="fingerprint.js"></script>
+  
+  <!-- Helper functions -->
+  <script src="ff_helper.js"></script>
+  
+</head>
+
+
+
+<body>
+  
+<!-- The code screening slide. -->
+<div class="slide" id="codescreen">
+
+  <p class="block-text" style="font-weight: bold">This HIT is by invitation only and requires a code that was provided in a previous HIT.</p><br>
+
+  <div class="block-text">
+
+    <form id = "getcode" action="javascript:myFunction(){return};">
+      Please enter the code provided and click "Submit" to continue. Make sure not to include any extra white space.
+      <br><br>
+      <input type = "text" name = "code">
+      <br><br>
+      <input type = "submit"</a>
+      <br><br>
+      <span id="validated" style="color: red; font-weight: bold"><span>
+    </form>
+  
+</div>
+</div>
+
+<!-- The instructions slide. -->
+<div class="slide" id="instructions">
+  
+  <div style="width: 500px; margin: 0 auto; text-align: center; background-color: #8C1516; padding: 20px 15px 10px 10px">
+    <img src="images/stanford.png" height="46" width="360" alt="Stanford University">
+  </div>
+		
+	<p class="block-text">Thanks for coming back! Your only task is to click the start button.
+  </p>
+  <br>
+  
+	<!-- Button to start the experiment. <code>this.blur()</code> removes the focus from the button, if the user pressed the button by using the keyboard, rather than the mouse. -->
+	<button type="button" onclick="this.blur(); end()">Start</button>
+
+	<!-- Legal blurb that we're required to show. -->
+	<p class="block-text" id="legal">Legal information: By answering the
+		following questions, you are participating in a study being performed by
+		cognitive scientists in the Stanford Department of Psychology. If you have
+		questions about this research, please contact Karen LaRocque at <a
+		href="mailto://klarocqu@stanford.edu">klarocqu@stanford.edu</a> or Mike
+		Frank, at mcfrank@stanford.edu. You must be  at least 18 years old to
+		participate. Your participation in this research is voluntary. You may
+		decline to answer any or all of the following questions. You may decline
+		further participation, at any time, without adverse consequences. Your
+		anonymity is assured; the researchers who have requested your
+		participation will not receive any personal information about you.</p>
+</div>
+
+
+<!-- The finish slide. -->
+<div class="slide" id="finished" >
+  <div class="block-text" id="finish-nocheckin">
+    You're finished - thanks for participating! Submitting to Mechanical Turk...
+  </div>
+</div>
+
+
+<!-- Include the JavaScript file for the experiment. As written, that script immediately executes commands, so we include it here at the end of the HTML file to ensure that resources referenced by the script actually exist. -->
+<script src="ff_check.js"></script>
+
+</body>
+
+</html>
