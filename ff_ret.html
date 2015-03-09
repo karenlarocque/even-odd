@@ -68,7 +68,7 @@
       <img src="images/cookiejar_e1s1.png" style = "height: 100; width: 100">
   </div>
   
-  <p class="block-text"> Your job is to click the one that you saw from among three similar objects.</p>
+  <p class="block-text"> Your job is to click the one that you saw from among similar objects.</p>
   
   <div style="width: 120; height: 120; display:inline-block">
     <img src="images/cookiejar_e1s1.png" style = "height: 100; width 100">
@@ -87,6 +87,8 @@
   <div style="width: 120; height: 120; display:inline-block">
     <img src="images/cookiejar_e2s2.png" style="height: 100; width: 100">
   </div>
+  
+  <p class="block-text"> In this case, you would click the object in the upper left.</p>
  
   <p class="block-text">If you aren't sure, please take your best guess.</p>
   <br>
@@ -125,18 +127,26 @@
 
 <!-- The finish slide. -->
 <div class="slide" id="finished" >
+  
   <div class="block-text" id="finish-nocheckin">
     You're finished - thanks for participating! Submitting to Mechanical Turk...
   </div>
+  
   <div class="block-text" id="finish-yescheckin">
+    
     You're finished with this experiment - thanks for participating!<br><br>
     <b>You now qualify for one final experiment! This new experiment will take less than a minute and pays $0.10.</b><br><br>
-    Please visit <a href="https://workersandbox.mturk.com/mturk/preview?groupId=3LMOG6ZFAJPXP2VPOR009721OWMF2H" target = "_blank" id="checklink">this HIT</a> <span id = "timeframe">{{}}</span>(between <span id = "checkstart">{{}}></span> and <span id = "checkend" target="_blank">{{}}</span>), and enter the following code: <br>
-    <span id = "checkcode" style = "color: red">{{}}</span>.
+    
+    Please visit <a href="https://workersandbox.mturk.com/mturk/preview?groupId=3LMOG6ZFAJPXP2VPOR009721OWMF2H" target = "_blank" id="checklink">this HIT</a>:<br><br>
+    <span style = "color:red">https://workersandbox.mturk.com/mturk/preview?groupId=3LMOG6ZFAJPXP2VPOR009721OWMF2H</span>
     <br><br>
-    Once you have copied down the link and code, press the button to submit your data to Turk.
+    <span id = "timeframe">{{}}</span>(between <span id = "checkstart">{{}}></span> and <span id = "checkend">{{}}</span>), and enter the following code: <br><br>
+    <span id = "checkcode" style = "color: red">{{}}</span>
+    <br><br>
+    <b>Once you have copied down the link and code, press the button to submit your data to Turk.</b>
     <br>
     <button type="button" onclick="this.blur(); turk.submit(allData);">Submit</button>
+    
   </div>
   
 </div>

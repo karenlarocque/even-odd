@@ -56,7 +56,7 @@
     <p style="text-align: center">Bigger -- press <span class="bigger-key">{{}}</span></p>
   </div>
 
-  <p class="block-text">The objects will appear quickly, and they will keep appearing without waiting for your response. Try to respond as quickly as possible.</p>
+<p class="block-text">The objects will appear quickly, and they will keep appearing without waiting for your response. Please keep your fingers on the <span class="smaller-key">{{}}</span> and <span class="bigger-key">{{}}</span> keys throughout the task and try to respond as quickly as possible.</p>
 
 
 	<!-- Button to start the experiment. <code>this.blur()</code> removes the focus from the button, if the user pressed the button by using the keyboard, rather than the mouse. -->
@@ -126,16 +126,24 @@
 
 <!-- The finish slide. -->
 <div class="slide" id="finished" >
+  
   <div class="block-text" id="finish-noret">
     You're finished - thanks for participating! Submitting to Mechanical Turk...
   </div>
+  
   <div class="block-text" id="finish-yesret">
+    
     You're finished with this experiment - thanks for participating!<br><br>
+    
     <b>You now qualify for an additional experiment that tests your memory for the objects that you just saw! This new experiment will take approximately 5 minutes and pays $0.35.</b><br><br>
-    Please visit <a href="https://workersandbox.mturk.com/mturk/preview?groupId=3FL4YKC6SR4CFOW8TYEJAGH24OIMUE" id="retlink" target="_blank">this HIT</a> <span id = "timeframe">{{}}</span>(between <span id = "retstart">{{}}></span> and <span id = "retend">{{}}</span>), and enter the following code: <br>
-    <span id = "retcode" style = "color: red">{{}}</span>.
+    
+    Please visit <a href="https://workersandbox.mturk.com/mturk/preview?groupId=3FL4YKC6SR4CFOW8TYEJAGH24OIMUE" target="_blank" id="retlink">this HIT</a>:<br><br>
+    <span style="color:red">https://workersandbox.mturk.com/mturk/preview?groupId=3FL4YKC6SR4CFOW8TYEJAGH24OIMUE</span>
     <br><br>
-    Once you have copied down the link and code, press the button to submit your data to Turk.
+    <span id = "timeframe">{{}}</span>(between <span id = "retstart">{{}}></span> and <span id = "retend">{{}}</span>), and enter the following code: <br><br>
+    <span id = "retcode" style = "color: red">{{}}</span>
+    <br><br>
+    <b>Once you have copied down the link and code, press the button to submit your data to Turk.</b>
     <br>
     <button type="button" onclick="this.blur(); turk.submit(allData);">Submit</button>
   </div>
