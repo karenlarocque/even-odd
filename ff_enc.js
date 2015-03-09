@@ -17,7 +17,7 @@
 var allKeyBindings = [
        {"p": "smaller", "q": "bigger"},
        {"p": "bigger", "q": "smaller"} ],
-    myKeyBindings = randomElement(allKeyBindings),
+    myKeyBindings = turkRandom(allKeyBindings, turk.workerID)
     pSmaller = (myKeyBindings["p"] == "smaller");
 
 // Fill in the instructions template using jQuery's <code>html()</code> method. In particular,

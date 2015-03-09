@@ -12,6 +12,30 @@ function randomElement(array) {
   return array[randomInteger(array.length)];
 }
 
+// Do "deterministic randomization" based on the last character of the worker id
+// courtesy of L Ouyang
+turkRandom = function(array, id) {
+  var allTails = ["4","9","F","Z","H","1","U","A","8","P","Q","C","S","M","L","E","3","N","V","O","B","7","D","2","K","W","J","X","R","I","5","0","T","G","6","Y"]; //shuffled
+  
+  if (typeof id === "undefined") {
+    id = allTails[Math.round(Math.random() * allTails.length)]
+  }
+  
+  var n = array.length,
+  tail = id.split("")[id.length - 1], // split() appeases IE
+  dict = {}; // maps a tail onto an array index
+  
+  for(var i = 0 ; i < allTails.length; i++) {
+    var t = allTails[i];
+    dict[t] = i % n;
+  }
+  
+  return array[dict[tail]];
+}
+
+// example
+turkRandom(["cond1","cond2","cond3"],"A11MX7O9QOX4MB")
+
 // Fisher Yates algorithm for random shuffling
 // source: http://sedition.com/perl/javascript-fy.html
 function fisherYates ( myArray ) {
