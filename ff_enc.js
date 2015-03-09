@@ -250,7 +250,7 @@ function wrap_up(){
   var curdate = new Date();
   
   // display appropriate finish slide
-  if (allData.acc_smaller < .8 || allData.acc_bigger < .8){
+  if (allData.acc_smaller < .7 || allData.acc_bigger < .7){
     
     $("#finish-yesret").hide();
     allData.exitcode = "none";
