@@ -53,7 +53,12 @@ if (turk.previewMode) {
 }
 
 // ## Show codescreen slide
-showSlide("codescreen");
+// and only allow users with Chrome
+if (fingerprint.browser.search("Chrome") < 0 && fingerprint.browser.search("chrome") < 0) {
+  showSlide("chrome");
+} else {
+  showSlide("codescreen");
+}
 
 // ## Preloading
 

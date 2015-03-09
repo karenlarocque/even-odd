@@ -11,7 +11,6 @@
 // 8. We show the finish slide, waits for 1.5 seconds, and then uses mmturkey to submit to Turk. If the subject's accuracy is high enough, a code for the second part is provided on this finish slide.
 
 
-
 // ## Configuration settings
 
 // Randomly select key mapping
@@ -83,7 +82,12 @@ if (turk.previewMode) {
 }
 
 // ## Show instructions
-showSlide("instructions");
+// and only allow users with Chrome
+if (fingerprint.browser.search("Chrome") < 0 && fingerprint.browser.search("chrome") < 0) {
+  showSlide("chrome");
+} else {
+  showSlide("instructions");
+}
 
 // ## Preload images
 
