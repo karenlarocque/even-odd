@@ -17,7 +17,7 @@
 var allKeyBindings = [
        {"p": "smaller", "q": "bigger"},
        {"p": "bigger", "q": "smaller"} ],
-    myKeyBindings = turkRandom(allKeyBindings, turk.workerID) // deterministically random based on workerID
+    myKeyBindings = turkRandom(allKeyBindings, turk.workerId), // deterministically random based on workerID
     pSmaller = (myKeyBindings["p"] == "smaller");
 
 // Fill in the instructions template to let the subject know which keys correspond to bigger/smaller

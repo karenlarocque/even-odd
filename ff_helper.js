@@ -17,7 +17,7 @@ function randomElement(array) {
 turkRandom = function(array, id) {
   var allTails = ["4","9","F","Z","H","1","U","A","8","P","Q","C","S","M","L","E","3","N","V","O","B","7","D","2","K","W","J","X","R","I","5","0","T","G","6","Y"]; //shuffled
   
-  if (typeof id === "undefined") {
+  if (typeof id === "undefined" || id.length == 0) {
     id = allTails[Math.round(Math.random() * allTails.length)]
   }
   
