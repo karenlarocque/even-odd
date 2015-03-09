@@ -17,19 +17,13 @@
 var allKeyBindings = [
        {"p": "smaller", "q": "bigger"},
        {"p": "bigger", "q": "smaller"} ],
-    myKeyBindings = turkRandom(allKeyBindings, turk.workerID)
+    myKeyBindings = turkRandom(allKeyBindings, turk.workerID) // deterministically random based on workerID
     pSmaller = (myKeyBindings["p"] == "smaller");
 
-// Fill in the instructions template using jQuery's <code>html()</code> method. In particular,
-// let the subject know which keys correspond to bigger/smaller
-if (turk.previewMode) {
-  $(".smaller-key").text("<hidden-for-preview>");
-  $(".bigger-key").text("<hidden-for-preview>");
-  
-} else {
-  $(".smaller-key").text(pSmaller ? "P" : "Q");
-  $(".bigger-key").text(pSmaller ? "Q" : "P");
-}
+// Fill in the instructions template to let the subject know which keys correspond to bigger/smaller
+$(".smaller-key").text(pSmaller ? "P" : "Q");
+$(".bigger-key").text(pSmaller ? "Q" : "P");
+
 
 // Randomly select delay group
 var delayGroup = (randomInteger(1) ? "short" : "long")
