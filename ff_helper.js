@@ -33,9 +33,6 @@ turkRandom = function(array, id) {
   return array[dict[tail]];
 }
 
-// example
-turkRandom(["cond1","cond2","cond3"],"A11MX7O9QOX4MB")
-
 // Fisher Yates algorithm for random shuffling
 // source: http://sedition.com/perl/javascript-fy.html
 function fisherYates ( myArray ) {
