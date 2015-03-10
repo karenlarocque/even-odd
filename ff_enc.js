@@ -26,7 +26,7 @@ $(".bigger-key").text(pSmaller ? "Q" : "P");
 
 
 // Randomly select delay group
-var delayGroup = (randomInteger(1) ? "short" : "long")
+var delayGroup = (randomInteger(2) ? "short" : "long")
 
 // Initialize stimuli parameters
 var stimdir = "stim/";
