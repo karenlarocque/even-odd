@@ -41,22 +41,22 @@
 		
 	<p class="block-text">In this experiment, you will see pictures displayed on the screen. Your job is to decide if
                         the object in the picture is bigger or smaller than a shoebox. <br><br>
-                        Press <span class="smaller-key">{{}}</span> if the item in the picture is smaller than a shoebox and
-                        <span class="bigger-key">{{}}</span> if the item in the picture is bigger than a shoebox. <br><br>
+                        Press <span class="key">Q</span> if the item in the picture is <span class="qtext">{{}}</span> than a shoebox and
+                        <span class="key">P</span> if the item in the picture is <span class="ptext">{{}}</span> than a shoebox. <br><br>
                         Make your decision based on how big the object is <b>in real life</b>, not the size of the picture itself. <br><br>
   </p>
   
   <div style="width: 200; display:inline-block">
-    <img src="images/button.png" style = "height: 100; width 100">
-      <p style="text-align: center">Smaller -- press <span class="smaller-key">{{}}</span></p>
+    <img class="qimg", src="images/button.png" style = "height: 100; width 100">
+      <p style="text-align: center"><span class="qtext">{{}}</span> -- press <span class="key">Q</span></p>
   </div>
   
   <div style="width: 200; display:inline-block">
-    <img src="images/bed.png" style="height: 100; width: 100">
-    <p style="text-align: center">Bigger -- press <span class="bigger-key">{{}}</span></p>
+    <img class = "pimg", src="images/bed.png" style="height: 100; width: 100">
+      <p style="text-align: center"><span class="ptext">{{}}</span> -- press <span class="key">P</span></p>
   </div>
 
-<p class="block-text">The objects will appear quickly, and they will keep appearing without waiting for your response. Please keep your fingers on the <span class="smaller-key">{{}}</span> and <span class="bigger-key">{{}}</span> keys throughout the task and try to respond as quickly as possible.</p>
+<p class="block-text">The objects will appear quickly, and they will keep appearing without waiting for your response. Please keep your fingers on the <span class="key">Q</span> and <span class="key">P</span> keys throughout the task and try to respond as quickly as possible.</p>
 
 
 	<!-- Button to start the experiment. <code>this.blur()</code> removes the focus from the button, if the user pressed the button by using the keyboard, rather than the mouse. -->

@@ -64,7 +64,7 @@ button[disabled] {
   text-align: center;
 }
 
-.bigger-key, .smaller-key {
+.key {
   background-color: #e3e3e3;
   padding: 2px;
   border: 1px outset #cccccc;

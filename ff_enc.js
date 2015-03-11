@@ -21,8 +21,11 @@ var allKeyBindings = [
     pSmaller = (myKeyBindings["p"] == "smaller");
 
 // Fill in the instructions template to let the subject know which keys correspond to bigger/smaller
-$(".smaller-key").text(pSmaller ? "P" : "Q");
-$(".bigger-key").text(pSmaller ? "Q" : "P");
+$(".ptext").text(pSmaller ? "smaller" : "bigger");
+$(".pimg").attr("src",(pSmaller ? "images/button.png" : "images/bed.png"))
+$(".qtext").text(pSmaller ? "bigger" : "smaller");
+$(".qimg").attr("src",(pSmaller ? "images/bed.png" : "images/button.png"))
+
 
 
 // Randomly select delay group
