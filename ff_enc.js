@@ -128,10 +128,11 @@ var experiment = {
     showSlide("leadin");
     setTimeout(function(){
                $("p").hide();
+               
                setTimeout(function(){
                           experiment.next();
                           }, 1000)
-               }, 1500);
+               }, 3000);
   },
   
   // The function that gets called when the sequence is finished.

@@ -36,6 +36,7 @@ button {
 	height: 29px;
 	min-width: 70px;
 }
+
 button:active {
 	border-left: 1px solid #c9c9c9;
 	border-top: 1px solid #c9c9c9;
@@ -62,6 +63,22 @@ button[disabled] {
 
 #instructions {
   text-align: center;
+}
+
+#p-inst {
+  text-align: center;
+  position: fixed;
+  top: 85%;
+  left: 75%;
+  transform: translate(-50%, -50%);
+}
+
+#q-inst {
+  text-align: center;
+  position: fixed;
+  top: 85%;
+  left: 25%;
+  transform: translate(-50%, -50%);
 }
 
 .key {
