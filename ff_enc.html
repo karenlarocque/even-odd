@@ -84,7 +84,7 @@
 
 <!-- The "leadin" slide. -->
 <div class="slide" id="leadin">
-	<p style="text-align: center; top: 50%; position: relative"> Get ready ...</p>
+	<p style="text-align: center; top: 50%; position: relative" id="readytext"> Get ready ...</p>
   <div id="q-inst">
     <span class="key">Q</span><br>
     <span class="qtext">{{}}</span> than a shoebox<br>
@@ -97,9 +97,36 @@
   </div>
 </div>
 
-<!-- The "stage" slide - where the bulk of the experiment will be displayed. Again, note the use of <code>{{}}</code>. -->
+<!-- The "stage" slide - where the bulk of the experiment will be displayed. -->
 <div class="slide" id="stage">
 	<img class = "centered" src="stim/aabacus/e1_s1.jpg">
+  <div id="q-inst">
+    <span class="key">Q</span><br>
+    <span class="qtext">{{}}</span> than a shoebox<br>
+    (in real life)
+  </div>
+  <div id="p-inst">
+    <span class="key">P</span><br>
+    <span class="ptext">{{}}</span> than a shoebox<br>
+    (in real life)
+  </div>
+</div>
+
+<!-- The "rest" slide - give the participants a short break. -->
+<div class="slide" id="rest">
+  
+  <div style="text-align: center; top: 25%; position: relative">
+  
+    <p>You are done with half of the experiment and can take a short break.<br>
+    Press the button when you would like to continue.</p>
+  
+    <button type="button" onclick="this.blur(); experiment.leadin();">Continue</button>
+  
+    <p style='color:red'>Keep in mind that you still must complete the HIT in the allotted time.<br>
+    We recommend that you press continue with at least 5 minutes remaining to complete the HIT.</p>
+    
+  </div>
+  
   <div id="q-inst">
     <span class="key">Q</span><br>
     <span class="qtext">{{}}</span> than a shoebox<br>

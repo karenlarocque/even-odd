@@ -110,11 +110,10 @@ var allData = {
   fingerprintData: fingerprint,
   counterbalance: counterbalance,
   delaygroup: delayGroup,
+  nTrials: trialOrder.length,
   trialData: [], // populated each trial
   
 }
-
-
 
 // ## Run experiment
 var experiment = {
@@ -122,17 +121,21 @@ var experiment = {
   // Trials
   // deep copy since we are using .shift() but want to retain record of trial order
   trials: $.extend(true, [], trialOrder),
+  rested: false,
   
   // The function that gets called for the first trial (1500 ms padding)
   leadin: function() {
     showSlide("leadin");
+    $("#readytext").show()
     setTimeout(function(){
-               $("p").hide();
+               
+               $("#readytext").hide();
                
                setTimeout(function(){
                           experiment.next();
                           }, 1000)
                }, 3000);
+    
   },
   
   // The function that gets called when the sequence is finished.
@@ -154,35 +157,42 @@ var experiment = {
       
     }
     
-    // Get the current trial - <code>shift()</code> removes the first element of the array and returns it
-    var trial_img = experiment.trials.shift();
-    
-    // Initialize data structure for the trial
-    var trial = {
-      stimulus: trial_img,
-      rt: -1,
-      resp: 'noresponse'
-    };
-    
-    // Display the image stimulus
-    showSlide("stage");
-    $(".centered").attr("src", trial_img);
-    $(".centered").show();
-    
-    // Get the current time so we can compute reaction time later
-    var startTime = (new Date()).getTime();
-    
-    // Function for keyboard input
-    var keyPressHandler = function(event) {
+    if (experiment.trials.length == allData.nTrials / 2 & !experiment.rested) {
       
-      var keyCode = event.which;
+      experiment.rested = true;
+      showSlide("rest");
       
-      if (keyCode != 81 && keyCode != 80) {
+    } else {
+    
+      // Get the current trial - <code>shift()</code> removes the first element of the array and returns it
+      var trial_img = experiment.trials.shift();
+      
+      // Initialize data structure for the trial
+      var trial = {
+        stimulus: trial_img,
+        rt: -1,
+        resp: 'noresponse'
+      };
+    
+      // Display the image stimulus
+      showSlide("stage");
+      $(".centered").attr("src", trial_img);
+      $(".centered").show();
+    
+      // Get the current time so we can compute reaction time later
+      var startTime = (new Date()).getTime();
+    
+      // Function for keyboard input
+      var keyPressHandler = function(event) {
+      
+        var keyCode = event.which;
+      
+        if (keyCode != 81 && keyCode != 80) {
         
-        // If a key that we don't care about is pressed, re-attach the handler (see the end of this script for more info)
-        $(document).one("keydown", keyPressHandler);
+          // If a key that we don't care about is pressed, re-attach the handler (see the end of this script for more info)
+          $(document).one("keydown", keyPressHandler);
         
-      } else {
+        } else {
         
         // If a valid key is pressed (code 80 is p, 81 is q),
         // record the reaction time (current time minus start time) and which key was pressed
@@ -191,32 +201,33 @@ var experiment = {
             trial.rt = endTime - startTime;
             trial.resp = key;
         
-        // Check if it's a stimulus that we want to assess for accuracy
-        // and if yes, assume for now that response will be incorrect
-        var answerSmaller = ((key == "p" && pSmaller) || (key == "q" && !pSmaller))
+          // Check if it's a stimulus that we want to assess for accuracy
+          // and if yes, assume for now that response will be incorrect
+          var answerSmaller = ((key == "p" && pSmaller) || (key == "q" && !pSmaller))
 
-        if (jQuery.inArray(trial_img.split("/")[1], set_smaller) > -1 && answerSmaller) {
-          correct_smaller += 1;
-        } else if (jQuery.inArray(trial_img.split("/")[1], set_bigger) > -1 && !answerSmaller) {
-          correct_bigger += 1;
-        }
+          if (jQuery.inArray(trial_img.split("/")[1], set_smaller) > -1 && answerSmaller) {
+            correct_smaller += 1;
+          } else if (jQuery.inArray(trial_img.split("/")[1], set_bigger) > -1 && !answerSmaller) {
+            correct_bigger += 1;
+          }
         
-      }
-    };
+        }
+      };
     
-    // Bind the key press handler
-    $(document).one("keydown", keyPressHandler);
+      // Bind the key press handler
+      $(document).one("keydown", keyPressHandler);
     
-    // Show stimulus for 200 ms, then clear & impose 1800 ms ISI
-    setTimeout(function(){
-                  $(".centered").hide();
-                  setTimeout(function(){
-                          $(document).off("keydown", keyPressHandler);
-                          allData.trialData.push(trial);
-                          experiment.next();
-                          }, 1800);
+      // Show stimulus for 200 ms, then clear & impose 1800 ms ISI
+      setTimeout(function(){
+                    $(".centered").hide();
+                    setTimeout(function(){
+                             $(document).off("keydown", keyPressHandler);
+                             allData.trialData.push(trial);
+                             experiment.next();
+                             }, 1800);
                }, 200);
-
+      
+    }
   }
 }
 
