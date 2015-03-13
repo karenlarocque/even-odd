@@ -237,12 +237,14 @@ var experiment = {
 $("form").submit( function (){
                  var age = $("#demographics")[0].elements["age"].value;
                  var gender = $("#demographics")[0].elements["gender"].value;
+                 var comments = $("#demographics")[0].elements["comments"].value;
                  
                  if (age == "" || gender == "") {
                  $("#validated").text("Please fill out all fields before submitting.")
                  } else {
                  allData.age = age;
                  allData.gender = gender;
+                 allData.comments = comments;
                  wrap_up();
                  }})
 
@@ -257,6 +259,7 @@ function wrap_up(){
   
   // record current time
   var curdate = new Date();
+  allData.submitTime = curdate;
   
   // display appropriate finish slide
   if (allData.acc_smaller < .7 || allData.acc_bigger < .7){
@@ -314,8 +317,6 @@ function wrap_up(){
     showSlide("finished");
     
   }
-  
-  
   
 }
 
