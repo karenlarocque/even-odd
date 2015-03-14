@@ -79,9 +79,10 @@ function preload_wrap() {
 
 // ## Code validation
 var code = "";
-$("form").submit( function (){
+$("form#getcode").submit( function (){
                  
-  $("#validated").text("")
+  $("#validated").text("");
+  $("#validated").attr("color", "red");
   code = $("#getcode")[0].elements["code"].value; //global scope, try to fix later
   
   // screen for invalid format
@@ -124,6 +125,7 @@ $("form").submit( function (){
                  if (turk.previewMode) {
                  
                    $("#validated").text("This code is valid but cannot submit while in preview mode.");
+                   $("#validated").attr("color", "green");
                    return;
                  
                  }
@@ -157,46 +159,7 @@ var experiment = {
   // The function that gets called when the sequence is finished.
   end: function() {
     
-    allData.entrycode = code;
-    
-    // display appropriate finish slide
-    if (allData.delayGroup == "long"){
-      
-      $("#finish-yescheckin").hide();
-      allData.exitcode = "none";
-      
-      // Show the finish slide.
-      showSlide("finished");
-      
-      // Wait 1.5 seconds and then submit the whole experiment object to Mechanical Turk (mmturkey filters out the functions so we know we're just submitting properties [i.e. data])
-      setTimeout(function() { turk.submit(allData) }, 1500);
-      
-    } else {
-      
-      $("#finish-nocheckin").hide();
-      $("#timeframe").text(" between 60 hours and 84 hours from now ");
-      
-      // careful with the order here
-      // or change to copy by value
-      var curdate = new Date();
-      
-      var startret = curdate;
-      startret.setHours(startret.getHours() + 60)
-      $("#checkstart").text(dateToString(startret));
-      var startcode = dateToCode(startret);
-      
-      var endret = startret;
-      endret.setHours(endret.getHours() + 24);
-      $("#checkend").text(dateToString(endret));
-      var endcode = dateToCode(endret);
-      
-      $("#checkcode").text("0176" + startcode + endcode + "0198");
-      allData.exitcode = "0176" + startcode + endcode + "0198";
-      
-      showSlide("finished");
-      // user clicks button to submit
-
-    }
+    showSlide("comments");
     
   },
   
@@ -258,4 +221,59 @@ var experiment = {
     $("img").one("click", clickHandler); //'one' is not working as intended
     
   }
+}
+
+// ## Submit comments
+$("form#commentform").submit( function (){
+                 
+                 var comments = $("#commentform")[0].elements["comments"].value;
+                 allData.comments = comments;
+                 wrap_up();
+                 
+                 })
+
+// ## Wrap up function for end of experiment
+function wrap_up() {
+  
+  allData.submitTime = new Date();
+  allData.entrycode = code;
+  
+  // display appropriate finish slide
+  if (allData.delayGroup == "long"){
+    
+    $("#finish-yescheckin").hide();
+    allData.exitcode = "none";
+    
+    // Show the finish slide.
+    showSlide("finished");
+    
+    // user clicks button to submit
+    
+  } else {
+    
+    $("#finish-nocheckin").hide();
+    $("#timeframe").text(" between 60 hours and 84 hours from now ");
+    
+    // careful with the order here
+    // or change to copy by value
+    
+    var curDate = new Date();
+    var startret = curDate;
+    startret.setHours(startret.getHours() + 60)
+    $("#checkstart").text(dateToString(startret));
+    var startcode = dateToCode(startret);
+    
+    var endret = startret;
+    endret.setHours(endret.getHours() + 24);
+    $("#checkend").text(dateToString(endret));
+    var endcode = dateToCode(endret);
+    
+    $("#checkcode").text("0176" + startcode + endcode + "0198");
+    allData.exitcode = "0176" + startcode + endcode + "0198";
+    
+    showSlide("finished");
+    // user clicks button to submit
+    
+  }
+  
 }
