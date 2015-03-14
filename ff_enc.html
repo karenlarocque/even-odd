@@ -142,7 +142,10 @@
 <!-- The demographics slide. -->
 <div class="slide" id="demo">
   
-  <div> Please enter some demographic information and any comments and then click 'submit'. </div>
+  <div>
+    Please enter some demographic information and any comments and then click 'submit'. <br>
+    <p id="submitagain" style="text-align: center; font-weight: bold"> You will need to click submit again on the next screen.</b></p>
+  </div>
   
   <br><br>
   
@@ -179,7 +182,8 @@
 <div class="slide" id="finished" >
   
   <div class="block-text" id="finish-noret">
-    You're finished - thanks for participating! Submitting to Mechanical Turk...
+    You're finished - thanks for participating!
+    <button type="button" onclick="this.blur(); turk.submit(allData);">Submit to Turk</button>
   </div>
   
   <div class="block-text" id="finish-yesret">
@@ -196,7 +200,7 @@
     <br><br>
     <b>Once you have copied down the link and code, press the button to submit your data to Turk.</b>
     <br>
-    <button type="button" onclick="this.blur(); turk.submit(allData);">Submit</button>
+    <button type="button" onclick="this.blur(); turk.submit(allData);">Submit to Turk</button>
   </div>
 </div>
 

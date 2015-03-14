@@ -224,7 +224,7 @@ var experiment = {
                              $(document).off("keydown", keyPressHandler);
                              allData.trialData.push(trial);
                              experiment.next();
-                             }, 1800);
+                             }, 2000);
                }, 200);
       
     }
@@ -233,7 +233,7 @@ var experiment = {
 
 
 
-// ## Submit demographic submission
+// ## Submit demographics & comments
 $("form").submit( function (){
                  var age = $("#demographics")[0].elements["age"].value;
                  var gender = $("#demographics")[0].elements["gender"].value;
@@ -259,7 +259,7 @@ function wrap_up(){
   
   // record current time
   var curdate = new Date();
-  allData.submitTime = curdate;
+  allData.submitTime = new Date().toString();
   
   // display appropriate finish slide
   if (allData.acc_smaller < .7 || allData.acc_bigger < .7){
@@ -268,14 +268,11 @@ function wrap_up(){
     allData.exitcode = "none";
     
     showSlide("finished");
-    // Wait 1.5 seconds and then submit the whole experiment object to Mechanical Turk (mmturkey filters out the functions so we know we're just submitting properties [i.e. data])
-    setTimeout(function() { turk.submit(allData) }, 1500);
-    
     
   } else if (delayGroup == "short"){
     
     $("#finish-noret").hide();
-    $("#timeframe").text(" within the next 10 minutes ");
+    $("#timeframe").text(" within the next 60 minutes ");
     
     // careful with the order here
     // or change to copy by value
@@ -284,7 +281,7 @@ function wrap_up(){
     var startcode = dateToCode(startret);
     
     var endret = startret;
-    endret.setMinutes(endret.getMinutes() + 10);
+    endret.setMinutes(endret.getMinutes() + 60);
     $("#retend").text(dateToString(endret));
     var endcode = dateToCode(endret);
     
@@ -292,7 +289,6 @@ function wrap_up(){
     allData.exitcode = ("8302" + startcode + endcode + "2153s");
     
     showSlide("finished");
-    
     
   } else {
     
