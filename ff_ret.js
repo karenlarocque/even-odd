@@ -82,7 +82,7 @@ var code = "";
 $("form#getcode").submit( function (){
                  
   $("#validated").text("");
-  $("#validated").attr("color", "red");
+  $("#validated").attr("style", "color:red");
   code = $("#getcode")[0].elements["code"].value; //global scope, try to fix later
   
   // screen for invalid format
@@ -125,7 +125,7 @@ $("form#getcode").submit( function (){
                  if (turk.previewMode) {
                  
                    $("#validated").text("This code is valid but cannot submit while in preview mode.");
-                   $("#validated").attr("color", "green");
+                   $("#validated").attr("style", "color:green");
                    return;
                  
                  }
