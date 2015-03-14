@@ -15,6 +15,7 @@ var code = "";
 $("form").submit( function (){
                  
                  $("#validated").text("")
+                 $("#validated").attr("style", "color:red");
                  code = $("#getcode")[0].elements["code"].value; //global scope, try to fix later
                  
                  // screen for invalid format
@@ -57,6 +58,7 @@ $("form").submit( function (){
                     if (turk.previewMode) {
                  
                       $("#validated").text("This code is valid but cannot submit while in preview mode.");
+                      $("#validated").attr("style", "color:green");
                       return;
                  
                     }
@@ -75,6 +77,7 @@ function end() {
   
     // Show the finish slide.
     showSlide("finished");
+    allData.submitTime = new Date().toString()
     
     // Wait 1.5 seconds and then submit the whole experiment object to Mechanical Turk (mmturkey filters out the functions so we know we're just submitting properties [i.e. data])
     setTimeout(function() { turk.submit(allData) }, 1500);
