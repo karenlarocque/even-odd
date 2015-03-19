@@ -83,15 +83,16 @@ $("form#getcode").submit( function (){
                  
   $("#validated").text("");
   $("#validated").attr("style", "color:red");
-  code = $("#getcode")[0].elements["code"].value; //global scope, try to fix later
   
+  code = $("#getcode")[0].elements["code"].value; //global scope, try to fix later
+                                        
   // screen for invalid format
   if (!(code.length == 33 &&
       code.slice(0,4) == "8302" &&
       (code.slice(-5) == "2153s" || code.slice(-5) == "2153l") &&
       !isNaN(code.slice(0,-1)))) {
                  
-                 $("#validated").text("Invalid code. Please enter a valid code.");
+                 $("#validated").text("Invalid code. Please enter a valid code. Make sure there are no spaces before or after the code!");
                  return;
                  
   }
