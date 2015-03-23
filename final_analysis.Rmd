@@ -1,0 +1,395 @@
+---
+title: 'Psych254: Final Analysis'
+author: "Karen LaRocque"
+date: "March 6, 2015"
+output: html_document
+---
+## Description
+
+
+## Analysis
+
+Load libraries.
+
+```{r message = FALSE, warning = FALSE}
+library(dplyr)
+library(ggplot2)
+library(grid)
+library(rjson)
+library(tidyr)
+```
+
+Define function for formatting encoding data for single subject.
+
+```{r}
+read_enc <- function(enc_file){
+  
+  ## read file
+  djson <- fromJSON(file = enc_file)
+  
+  ## get key bindings
+  keybind <- djson$answers$data$keyBindings
+  keyframe <- data.frame(enc_respkey = names(keybind), enc_response = unlist(keybind))
+  
+  ## create trial-wise info
+  trialdata <- djson$answers$data$trialData
+  trialdata_unlisted <- unlist(trialdata)
+  
+  # validate input
+  tbl <- table(names(trialdata_unlisted))
+  stopifnot(tbl[['resp']] == tbl[['rt']] && tbl[['resp']] == tbl[['stimulus']])
+  
+  # move json data into data frame
+  # add trial order
+  # remove path info
+  # parse state, exemplar, and stimulus name
+  # coerce variables to numeric / factor
+  # replace RT of -1 with NA
+  # match keys with response
+  d <- data.frame(worker         = djson$WorkerId,
+                  enc_submitTime = djson$answers$data$submitTime,
+                  gender         = djson$answers$data$gender,
+                  age            = djson$answers$data$age,
+                  enc_delay      = djson$answers$data$delaygroup,
+                  acc_bigger     = djson$answers$data$acc_bigger,
+                  acc_smaller    = djson$answers$data$acc_smaller,
+                  enc_exitcode   = djson$answers$data$exitcode,
+                  enc_comments   = djson$answers$data$comments,
+                  cb             = djson$answers$data$counterbalance,
+                  stimulus       = trialdata_unlisted[names(trialdata_unlisted) %in% "stimulus"],
+                  enc_rt         = trialdata_unlisted[names(trialdata_unlisted) %in% "rt"],
+                  enc_respkey    = trialdata_unlisted[names(trialdata_unlisted) %in% "resp"],
+                  stringsAsFactors = FALSE
+                  ) %>%
+        mutate(enc_trial = 1:nrow(.)) %>% 
+        mutate(stimulus = gsub("stim/", "", stimulus),
+               enc_exemplar = substr(stimulus, regexpr("e[12]", stimulus), regexpr("e[12]", stimulus)+1),
+               enc_state    = substr(stimulus, regexpr("s[12]", stimulus), regexpr("s[12]", stimulus)+1),
+               stimulus = gsub("/e[12]_s[12].jpg", "", stimulus)) %>%        
+        mutate(stimulus = factor(stimulus),
+               enc_respkey = factor(enc_respkey),
+               enc_exemplar = factor(enc_exemplar),
+               enc_state = factor(enc_state),
+               enc_rt = as.numeric(enc_rt)) %>%
+        mutate(enc_rt = ifelse(enc_rt == -1, NA, enc_rt)) %>%
+        left_join(keyframe, by = "enc_respkey")  
+}
+```
+
+Define function for formatting retrieval data for single subject.
+
+```{r}
+read_ret <- function(ret_file){
+  
+  ## read file
+  djson <- fromJSON(file = ret_file)
+  
+  ## create trial-wise info
+  trialdata <- djson$answer$data$trialData
+  trialdata_unlisted <- unlist(trialdata)
+  
+  # validate input
+  tbl <- table(names(trialdata_unlisted))
+  stopifnot(tbl[['resp']] == tbl[['rt']] && tbl[['resp']] == tbl[['stimulus']])
+  
+  # move list into data frame
+  # add trial order
+  # remove path info
+  # parse state, exemplar, and stimulus name
+  # match keys with response
+  # coerce variables to numeric / factor
+  d <- data.frame(worker         = djson$WorkerId,
+                  ret_submitTime = djson$answers$data$submitTime,
+                  ret_delayGroup = djson$answers$data$delayGroup,
+                  ret_entrycode  = djson$answers$data$entrycode,
+                  ret_exitcode   = djson$answers$data$exitcode,
+                  ret_rt         = trialdata_unlisted[names(trialdata_unlisted) %in% "rt"],
+                  ret_resp       = trialdata_unlisted[names(trialdata_unlisted) %in% "resp"],
+                  stringsAsFactors = FALSE
+                  ) %>%
+        mutate(ret_trial = 1:nrow(.)) %>% 
+        mutate(ret_resp = gsub("stim/", "", ret_resp),
+               ret_exemplar = substr(ret_resp, regexpr("e[12]", ret_resp), regexpr("e[12]", ret_resp)+1),
+               ret_state    = substr(ret_resp, regexpr("s[12]", ret_resp), regexpr("s[12]", ret_resp)+1),
+               stimulus = gsub("/e[12]_s[12].jpg", "", ret_resp)) %>%        
+        mutate(stimulus = factor(stimulus),
+               ret_exemplar = factor(ret_exemplar),
+               ret_state = factor(ret_state),
+               ret_rt = as.numeric(ret_rt))
+}
+```
+
+```{r}
+read_check <- function(check_file){
+  
+  ## read file
+  djson <- fromJSON(file = check_file)
+  
+  # move list into data frame
+  # coerce variables to numeric / factor
+  d <- data.frame(worker           = djson$WorkerId,
+                  check_submitTime = djson$answers$data$submitTime,
+                  check_entrycode  = djson$answers$data$entrycode,
+                  stringsAsFactors = FALSE
+                  )
+}
+```
+
+Read in data for all subjects.
+
+```{r}
+# get encoding data
+path_enc <- '/Users/karen/Google Drive/class/psych254/project/cosub_enc/production-results/'
+files_enc <- list.files(path_enc, pattern = "*.json", full.names = TRUE)
+
+d_enc <- data.frame()
+for (f in files_enc){
+  d_enc <- rbind(d_enc, read_enc(f))
+}
+
+# get retrieval data
+path_ret <- '/Users/karen/Google Drive/class/psych254/project/cosub_ret/production-results/'
+files_ret <- list.files(path_ret, pattern = "*.json", full.names = TRUE)
+
+d_ret <- data.frame()
+for (f in files_ret){
+  d_ret <- rbind(d_ret, read_ret(f))
+}
+
+# get check data
+path_check <- '/Users/karen/Google Drive/class/psych254/project/cosub_check/production-results/'
+files_check <- list.files(path_check, pattern = '*.json', full.names = TRUE)
+d_check <- data.frame()
+for (f in files_check){
+  d_check <- rbind(d_check, read_check(f))
+}
+
+# merge encoding & retrieval
+d <- left_join(d_enc, d_ret, by = c("worker", "stimulus"))
+
+# assess success of merge
+```
+
+Get accuracy summary.
+
+```{r}
+# create accuracy variables
+d <- mutate(d, state_acc = ifelse(enc_state    == ret_state,    1, 0),
+               exemp_acc = ifelse(enc_exemplar == ret_exemplar, 1, 0),
+               both_acc  = state_acc * exemp_acc)
+
+# summarize
+ds <- group_by(d, worker) %>%
+      summarise(state_acc = mean(state_acc),
+                exemp_acc = mean(exemp_acc),
+                both_acc  = mean(both_acc),
+                enc_rt    = mean(enc_rt, na.rm = TRUE),
+                ret_rt    = mean(ret_rt),
+                delay     = enc_delay[1],
+                age       = age[1],
+                gender    = gender[1]) %>%
+      ungroup()
+```
+
+Filter with exclusion criteria.
+
+```{r}
+# three short-delay participants had trouble completing the check-in but did email
+check_emailed <- c('AKY7ZFPCHAXMJ', 'A19M6CYM4B8WP2', 'A1F1P05U6J19QK')
+
+# create three inclusion criteria levels
+# liberal: did they do the retrieval test & score above chance
+# medium: liberal + short delay made some attempt to check in (turk or email)
+# conservative: liberal + short delay group checked in on turk
+
+# did they do the retrieval task and score above chance?
+ds <- mutate(ds, include_lib = ifelse(is.na(state_acc) | both_acc < .33 , FALSE, TRUE),
+                 include_med = ifelse(!include_lib | (ds$delay == 'short' & !(worker %in% d_check$worker) & !(worker %in% check_emailed)), FALSE, TRUE),
+                 include_cons = ifelse(!include_lib | (ds$delay == 'short' & !(worker %in% d_check$worker)), FALSE, TRUE)
+               )
+```
+
+Get demographics
+```{r}
+ds$age <- as.numeric(ds$age)
+summary(ds$age)
+sd(ds$age)
+table(ds$gender)
+
+# how many people were not invited back
+mean(d$enc_exitcode == 'none') * 49
+# how many people did the retrieval task
+mean(!is.na(d$ret_entrycode)) * 49
+# how many people did the retrieval task
+mean(!is.na(d$ret_entrycode) & d$enc_delay == 'short') * 49
+mean(!is.na(d$ret_entrycode) & d$enc_delay == 'long') * 49
+
+sum(ds$include_lib & ds$delay == 'short')
+sum(ds$include_lib & ds$delay == 'long')
+
+# demos for final sample (cons)
+summary(ds[ds$include_cons & ds$delay == 'short', 'age'])
+summary(ds[ds$include_cons & ds$delay == 'long', 'age'])
+
+# medium
+summary(ds[ds$include_med & ds$delay == 'short', 'age'])
+
+# liberal
+summary(ds[ds$include_lib & ds$delay == 'short', 'age'])
+```
+
+Caculate depndence scores.
+
+```{r}
+# calculate percent remembered based off of percent correct
+ds <- mutate(ds, state_pr = 2 * state_acc - 1,
+                 exemp_pr = 2 * exemp_acc - 1,
+                 state_full_dep = state_pr / (state_pr + 1),
+                 exemp_full_dep = exemp_pr / (exemp_pr + 1),
+                 state_obs_dep  = (both_acc / exemp_acc) - ((state_acc - both_acc) / (1 - exemp_acc)), # p(state|exemp) - p(state|~exemp)
+                 exemp_obs_dep  = (both_acc / state_acc) - ((exemp_acc - both_acc) / (1 - state_acc)), # p(exemp|state) - p(exemp|~state)
+                 state_dep = state_obs_dep / state_full_dep,
+                 exemp_dep = exemp_obs_dep / exemp_full_dep)
+
+print(ds[ds$include_cons == TRUE, c('worker', 'delay', 'state_dep', 'exemp_dep')])
+```
+
+Primary analysis.
+
+```{r}
+prim <- ds[ds$include_lib, c('worker',
+                             'delay',
+                             'state_acc',
+                             'exemp_acc',
+                             'both_acc',
+                             'state_dep',
+                             'exemp_dep',
+                             'include_lib',
+                             'include_med',
+                             'include_cons')] 
+
+prim <- gather(prim, measure, proportion, state_acc:exemp_dep) %>%
+        separate(measure, into = c('feature', 'measure'), sep = '_') %>%
+        mutate(delay = factor(delay, levels = c("short", "long")))
+```
+
+Get Brady et al. data.
+
+```{r}
+brady <- data.frame(worker = c("orig", "orig"),
+                    delay = c("short", "long"),
+                    state_acc = c(.723, .63),
+                    exemp_acc = c(.787, .666),
+                    both_acc = c(NA, NA),
+                    state_dep = c(.466, .134),
+                    exemp_dep = c(.274, .076)) %>%
+         gather(measure, proportion, state_acc:exemp_dep) %>%
+         separate(measure, into = c('feature', 'measure'), sep = '_') %>%
+         mutate(delay = factor(delay, levels = c("short", "long")))
+```
+
+Combine data at each level of inclusion criteria with original Brady et al. data and summarise mean + 95% CI.
+
+```{r}
+lib <- prim[prim$include_lib, names(brady)]
+lib$group <- 'liberal_inclusion'
+med <- prim[prim$include_med, names(brady)]
+med$group <- 'medium_inclusion'
+cons <- prim[prim$include_cons, names(brady)]
+cons$group <- 'replication'
+
+dp <- rbind(lib, med, cons)
+dp_ss <- dp  
+dp <- group_by(dp, delay, feature, measure, group) %>%
+      summarise(mean_proportion = mean(proportion, na.rm = TRUE), ci_95 = (sd(proportion, na.rm = TRUE) / length(proportion)) * qt(.975, length(proportion) - 1))
+
+# enter brady CI by hand
+# 15 short delay subs
+# 13 long delay subs
+brady$ci_95[brady$delay=="short" & brady$feature=="state" & brady$measure=="dep"] = .097 * qt(.975, 14)
+brady$ci_95[brady$delay=="short" & brady$feature=="exemp" & brady$measure=="dep"] = .049 * qt(.975, 14)
+brady$ci_95[brady$delay=="long"  & brady$feature=="state" & brady$measure=="dep"] = .141 * qt(.975, 12)
+brady$ci_95[brady$delay=="long"  & brady$feature=="exemp" & brady$measure=="dep"] = .087 * qt(.975, 12)
+
+brady$worker <- NULL
+brady$group <- 'original'
+brady$mean_proportion <- brady$proportion
+brady$proportion <- NULL
+
+dp <- rbind(dp, brady) %>%
+      mutate(group = factor(group, levels = c('original', 'replication', 'medium_inclusion', 'liberal_inclusion')))
+```
+
+Plot against original data
+
+```{r fig.width = 8}
+# set theme
+# theme
+invisible(themeopts <- theme_bw()
+    + theme(panel.grid=element_blank(), panel.border=element_blank(), axis.line=element_line(size=1,colour='black'))
+    + theme(strip.background=element_blank()) 
+    + theme(legend.position='bottom')
+    + theme(legend.key=element_blank())
+    + theme(text=element_text(size=14,family='Helvetica')) 
+    + theme(axis.title.x=element_text(vjust=0))
+    + theme(panel.margin=unit(c(1),'cm')))
+
+# feature accuracy
+(ggplot(data = subset(dp, measure == "acc" & feature != "both"), aes(x = delay, y = mean_proportion)) 
+ + geom_bar(fill = "slategray", stat = "identity")
+ + geom_errorbar(aes(ymin = mean_proportion - ci_95, ymax = mean_proportion + ci_95), size = 2, width = .5)
+ + geom_point(data = subset(dp_ss, measure == "acc" & feature != "both" & group != 'original'), aes(y = proportion, color = worker), size = 5)
+ + facet_grid(feature ~ group)
+ + scale_colour_discrete(guide = "none")
+ + ylab("Mean Proportion Correct")
+ + ggtitle("Feature Accuracy")
+ + themeopts)
+
+# feature dependency
+(ggplot(data = subset(dp, measure == "dep" & feature != "both"), aes(x = delay, y = mean_proportion)) 
+ + geom_bar(fill = "slategray", stat = "identity")
+ + geom_errorbar(aes(ymin = mean_proportion - ci_95, ymax = mean_proportion + ci_95), size = 2, width = .5)
+ + geom_point(data = subset(dp_ss, measure == "dep" & feature != "both" & group != "original"), aes(y = proportion, color = worker), size = 5)
+ + facet_grid(feature ~ group)
+ + scale_colour_discrete(guide = "none")
+ + ylab("Mean Feature Dependency")
+ + ggtitle("Feature Dependency")
+ + themeopts)
+
+# drop error bars so scale is not crazy
+(ggplot(data = subset(dp, measure == "dep" & feature != "both"), aes(x = delay, y = mean_proportion)) 
+ + geom_bar(fill = "slategray", stat = "identity")
+ + geom_errorbar(data = subset(dp, group == 'original' & feature != 'both' & measure == 'dep'), aes(ymin = mean_proportion - ci_95, ymax = mean_proportion + ci_95), size = 2, width = .5)
+ + geom_point(data = subset(dp_ss, measure == "dep" & feature != "both" & group != "original"), aes(y = proportion, color = worker), size = 5)
+ + facet_grid(feature ~ group)
+ + scale_colour_discrete(guide = "none")
+ + ylab("Mean Feature Dependency")
+ + ggtitle("Feature Dependency")
+ + themeopts)
+```
+
+Actual statistics.
+
+```{r}
+# conservative
+summary(lm(proportion ~ delay, dp_ss, subset = measure == 'dep' & feature == 'state' & group == 'replication'))
+summary(lm(proportion ~ delay, dp_ss, subset = measure == 'dep' & feature == 'exemp' & group == 'replication'))
+
+# get SE
+summary(lm(proportion ~ delay - 1, dp_ss, subset = measure == 'dep' & feature == 'state' & group == 'replication'))
+summary(lm(proportion ~ delay - 1, dp_ss, subset = measure == 'dep' & feature == 'exemp' & group == 'replication'))
+
+# medium
+summary(lm(proportion ~ delay, dp_ss, subset = measure == 'dep' & feature == 'state' & group == 'medium_inclusion'))
+summary(lm(proportion ~ delay, dp_ss, subset = measure == 'dep' & feature == 'exemp' & group == 'medium_inclusion'))
+
+summary(lm(proportion ~ delay - 1, dp_ss, subset = measure == 'dep' & feature == 'state' & group == 'medium_inclusion'))
+summary(lm(proportion ~ delay - 1, dp_ss, subset = measure == 'dep' & feature == 'exemp' & group == 'medium_inclusion'))
+
+# liberal
+summary(lm(proportion ~ delay, dp_ss, subset = measure == 'dep' & feature == 'state' & group == 'liberal_inclusion'))
+summary(lm(proportion ~ delay, dp_ss, subset = measure == 'dep' & feature == 'exemp' & group == 'liberal_inclusion'))
+
+summary(lm(proportion ~ delay - 1, dp_ss, subset = measure == 'dep' & feature == 'state' & group == 'liberal_inclusion'))
+summary(lm(proportion ~ delay - 1, dp_ss, subset = measure == 'dep' & feature == 'exemp' & group == 'liberal_inclusion'))
+```
