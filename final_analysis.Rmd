@@ -1,7 +1,7 @@
 ---
 title: 'Psych254: Final Analysis'
 author: "Karen LaRocque"
-date: "March 6, 2015"
+date: "March 23, 2015"
 output: html_document
 ---
 ## Description
